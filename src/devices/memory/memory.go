@@ -545,8 +545,10 @@ func (d *Device) getDevices() int {
 		_, err := smbus.ReadRegister(d.dev.File, colorAddresses[i], 0x00)
 		if err != nil {
 			if !slices.Contains(config.GetConfig().EnhancementKits, colorAddresses[i]) {
-				logger.Log(logger.Fields{"register": colorAddresses[i]}).Info("No such register found. Skipping...")
-				continue
+				if !slices.Contains(config.GetConfig().MemoryRegisterOverride, colorAddresses[i]) {
+					logger.Log(logger.Fields{"register": colorAddresses[i], "err": err}).Info("No such register found. Skipping...")
+					continue
+				}
 			} else {
 				logger.Log(logger.Fields{"register": colorAddresses[i]}).Info("Found Light Enhancement Kit in configuration")
 				d.setEnhancementKit(colorAddresses[i])

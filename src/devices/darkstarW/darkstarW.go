@@ -158,6 +158,7 @@ var (
 	cmdActivateFrontTilt      = []byte{0x01, 0xbb, 0x00}
 	cmdActivateBackTilt       = []byte{0x01, 0xbc, 0x00}
 	cmdBatteryLevel           = []byte{0x02, 0x0f}
+	cmdHeartbeat              = []byte{0x12}
 	bufferSize                = 64
 	bufferSizeWrite           = bufferSize + 1
 	headerSize                = 2
@@ -344,9 +345,22 @@ func (d *Device) SetConnected(value bool) {
 	d.Connected = value
 }
 
+// checkDeviceOnline will check if device is online
+func (d *Device) checkDeviceOnline() bool {
+	_, err := d.transfer(cmdHeartbeat, nil)
+	if err != nil {
+		logger.Log(logger.Fields{"error": err, "serial": d.Serial}).Warn("Device is offline")
+		return false
+	}
+	return true
+}
+
 // Connect will connect to a device
 func (d *Device) Connect() {
 	if !d.Connected {
+		if !d.checkDeviceOnline() {
+			return
+		}
 		d.Connected = true
 		d.setHardwareMode()        // Activate hardware mode
 		d.setSoftwareMode()        // Activate software mode
@@ -448,6 +462,9 @@ func (d *Device) GetDeviceTemplate() string {
 // ChangeDeviceProfile will change device profile
 func (d *Device) ChangeDeviceProfile(profileName string) uint8 {
 	if profile, ok := d.UserProfiles[profileName]; ok {
+		if !d.Connected {
+			return 0
+		}
 		currentProfile := d.DeviceProfile
 		currentProfile.Active = false
 		d.DeviceProfile = currentProfile
@@ -895,6 +912,9 @@ func (d *Device) ChangeDeviceBrightness(mode uint8) uint8 {
 
 // ChangeDeviceBrightnessValue will change device brightness via slider
 func (d *Device) ChangeDeviceBrightnessValue(value uint8) uint8 {
+	if !d.Connected {
+		return 0
+	}
 	if value < 0 || value > 100 {
 		return 0
 	}
@@ -1521,6 +1541,9 @@ func (d *Device) upgradeDpiProfiles() {
 // UpdateDeviceKeyAssignment will update device key assignments
 func (d *Device) UpdateDeviceKeyAssignment(keyIndex int, keyAssignment inputmanager.KeyAssignment) uint8 {
 	if val, ok := d.KeyAssignment[keyIndex]; ok {
+		if !d.Connected {
+			return 0
+		}
 		val.Default = keyAssignment.Default
 		val.ActionHold = keyAssignment.ActionHold
 		val.ActionType = keyAssignment.ActionType
@@ -2309,13 +2332,17 @@ func (d *Device) setupKeyAssignment() {
 		return
 	}
 
+	tilt := 0
 	keys := make([]int, 0)
-	for k := range d.KeyAssignment {
+	for k, v := range d.KeyAssignment {
+		if v.IsTilt {
+			tilt++
+		}
 		keys = append(keys, k)
 	}
 	sort.Ints(keys)
 
-	buf := make([]byte, keyAmount)
+	buf := make([]byte, keyAmount-tilt)
 	i := 0
 	for _, k := range keys {
 		value := d.KeyAssignment[k]
@@ -2811,7 +2838,7 @@ func (d *Device) startQueueWorker() {
 			binary.LittleEndian.PutUint16(buffer[0:2], uint16(len(buf)))
 			copy(buffer[headerWriteSize:], buf)
 
-			_, err := d.transferWithTimeout(cmdWriteColor, buffer)
+			_, err := d.transfer(cmdWriteColor, buffer)
 			if err != nil {
 				logger.Log(logger.Fields{"error": err, "serial": d.Serial}).Error("Unable to write to color endpoint")
 			}
@@ -2888,7 +2915,7 @@ func (d *Device) writeColorCluster(data []byte, _ int) {
 	binary.LittleEndian.PutUint16(buffer[0:2], uint16(len(buf)))
 	copy(buffer[headerWriteSize:], buf)
 
-	_, err := d.transferWithTimeout(cmdWriteColor, buffer)
+	_, err := d.transfer(cmdWriteColor, buffer)
 	if err != nil {
 		logger.Log(logger.Fields{"error": err, "serial": d.Serial}).Error("Unable to write to color endpoint")
 	}
@@ -2962,7 +2989,7 @@ func (d *Device) transfer(endpoint, buffer []byte) ([]byte, error) {
 		return bufferR, err
 	}
 
-	if _, err := d.dev.Dev.Read(bufferR); err != nil {
+	if _, err := d.dev.Dev.ReadWithTimeout(bufferR, 100*time.Millisecond); err != nil {
 		logger.Log(logger.Fields{"error": err, "serial": d.Serial}).Error("Unable to read data from device")
 		return bufferR, err
 	}
