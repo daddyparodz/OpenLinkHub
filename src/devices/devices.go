@@ -122,6 +122,7 @@ import (
 	"OpenLinkHub/src/openrgb"
 	"OpenLinkHub/src/smbus"
 	"OpenLinkHub/src/usb"
+	"OpenLinkHub/src/version"
 	"github.com/sstallion/go-hid"
 	"os"
 	"path/filepath"
@@ -504,6 +505,11 @@ func InitManual(productId uint16, key string) {
 
 // Init will initialize all compatible Corsair devices in your system
 func Init() {
+	logger.Log(logger.Fields{
+		"buildVersion": version.GetBuildInfo().BuildVersion,
+		"build":        version.GetBuildInfo().Revision,
+	}).Info("Application build")
+
 	// Initialize general HID interface
 	if err := hid.Init(); err != nil {
 		logger.Log(logger.Fields{"error": err}).Fatal("Unable to initialize HID interface")
