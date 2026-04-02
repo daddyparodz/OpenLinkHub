@@ -1,5 +1,41 @@
+## 2026-04-01
+
+* K70 PRO RGB TKL SE layout https://github.com/jurkovic-nikola/OpenLinkHub/issues/379 (620317b)
+* load lcd images if lcd exist https://github.com/jurkovic-nikola/OpenLinkHub/issues/380 (a50b025)
+* M65 Pro RGB https://github.com/jurkovic-nikola/OpenLinkHub/issues/375 (526f74e)
+
+## 2026-03-30
+
+* send empty REQUEST_PROFILE_LIST and REQUEST_PLUGIN_LIST for openrgb sdk clients (af36d7c)
+* readme update (c52331d)
+* update workflow (ec8710c)
+* bump go to 1.25, image, sys and text package versions (34f9d64)
+* fixups (52f7e79)
+
+## 2026-03-29
+
+* cpu, gpu, liquid temp rgb update https://github.com/jurkovic-nikola/OpenLinkHub/issues/376 (fd45524)
+
+## 2026-03-28
+
+* disable syncKeyboardSelectionMode() (5e90caf)
+* flashtap in slipstream (888d4c4)
+* slipstream battery level (7c19767)
+* vanguard 99 air (usb, wireless) (01f5721)
+
+## 2026-03-24
+
+* slipstream changes (7112063)
+
+## 2026-03-23
+
+* check for slipstream sleep status (135705e)
+* filters out unnecessary packets (73e8d1c)
+* multi gpus temperature profiles https://github.com/jurkovic-nikola/OpenLinkHub/issues/372 (1348c45)
+
 ## 2026-03-21
 
+* changelog, readme update (7ba26c3)
 * slipstream cleanup (648d776)
 
 ## 2026-03-19

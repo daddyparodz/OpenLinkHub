@@ -797,7 +797,6 @@ $(document).ready(function () {
                                         type:'get',
                                         success:function(result){
                                             $(keyAssignmentValue).empty();
-                                            console.log(result)
                                             $.each(result.data, function( index, value ) {
                                                 $(keyAssignmentValue).append($('<option>', { value: index, text: value }));
                                             });
@@ -1452,7 +1451,6 @@ $(document).ready(function () {
                                         type:'get',
                                         success:function(result){
                                             $(keyAssignmentValue).empty();
-                                            console.log(result)
                                             $.each(result.data, function( index, value ) {
                                                 $(keyAssignmentValue).append($('<option>', { value: index, text: value }));
                                             });
@@ -3469,7 +3467,6 @@ $(document).ready(function () {
                 try {
                     if (response.status === 1) {
                         const data = response.data;
-                        console.log(response)
                         const startColor = rgbToHex(data.RGBStartColor.red, data.RGBStartColor.green, data.RGBStartColor.blue);
                         const endColor = rgbToHex(data.RGBEndColor.red, data.RGBEndColor.green, data.RGBEndColor.blue);
                         const middleColor = rgbToHex(data.RGBMiddleColor.red, data.RGBMiddleColor.green, data.RGBMiddleColor.blue);
