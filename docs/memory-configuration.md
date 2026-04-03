@@ -57,10 +57,10 @@ sudo dmidecode -t memory | grep 'Part Number'
 ```
 
 ### Configure OpenLinkHub `config.json`
-You will need to change your `memorySmBus`, `memoryType`, and `memorySku` depending on your system values.
+You will need to change your `memoryType` and `memorySku` depending on your system values. `memorySmBus` may be left empty to auto-detect the first SMBus adapter, or set explicitly if your system has more than one SMBus controller.
 ```json
 "memory": true,
-"memorySmBus": "i2c-15",
+"memorySmBus": "",
 "memoryType": 5,
 "decodeMemorySku": false,
 "memorySku": "CMT64GX5M2B5600Z40",

@@ -30,7 +30,7 @@ type Configuration struct {
 	ResumeDelay               int      `json:"resumeDelay"`
 	LogFile                   string   `json:"logFile"`
 	LogLevel                  string   `json:"logLevel"`
-	EnhancementKits           []byte   `json:"enhancementKits"`
+	EnhancementKits           []int    `json:"enhancementKits"`
 	TemperatureOffset         int      `json:"temperatureOffset"`
 	AMDGpuIndex               int      `json:"amdGpuIndex"`
 	AMDSmiPath                string   `json:"amdsmiPath"`
@@ -45,7 +45,7 @@ type Configuration struct {
 	EnableGamepad             bool     `json:"enableGamepad"`
 	EnableMotherboard         bool     `json:"enableMotherboard"`
 	MotherboardBiosOnExit     bool     `json:"motherboardBiosOnExit"`
-	MemoryRegisterOverride    []byte   `json:"memoryRegisterOverride"`
+	MemoryRegisterOverride    []int    `json:"memoryRegisterOverride"`
 }
 
 var (
@@ -56,7 +56,7 @@ var (
 		"resumeDelay":               15000,
 		"logLevel":                  "info",
 		"logFile":                   "",
-		"enhancementKits":           make([]byte, 0),
+		"enhancementKits":           make([]int, 0),
 		"temperatureOffset":         0,
 		"amdGpuIndex":               0,
 		"amdsmiPath":                "",
@@ -71,7 +71,7 @@ var (
 		"enableGamepad":             true,
 		"enableMotherboard":         false,
 		"motherboardBiosOnExit":     false,
-		"memoryRegisterOverride":    make([]byte, 0),
+		"memoryRegisterOverride":    make([]int, 0),
 	}
 	systemService = true
 )
@@ -144,14 +144,14 @@ func upgradeFile(cfg string) {
 			Frontend:                  true,
 			Metrics:                   false,
 			Memory:                    false,
-			MemorySmBus:               "i2c-0",
+			MemorySmBus:               "",
 			MemoryType:                5,
 			Exclude:                   make([]uint16, 0),
 			MemorySku:                 "",
 			ResumeDelay:               15000,
 			LogLevel:                  "info",
 			LogFile:                   "",
-			EnhancementKits:           make([]byte, 0),
+			EnhancementKits:           make([]int, 0),
 			TemperatureOffset:         0,
 			AMDGpuIndex:               0,
 			AMDSmiPath:                "",
@@ -166,7 +166,7 @@ func upgradeFile(cfg string) {
 			EnableGamepad:             true,
 			EnableMotherboard:         false,
 			MotherboardBiosOnExit:     false,
-			MemoryRegisterOverride:    make([]byte, 0),
+			MemoryRegisterOverride:    make([]int, 0),
 		}
 		saveConfigSettings(value)
 	} else {

@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"unsafe"
@@ -71,23 +72,66 @@ func GetSmBus() (*SmBus, error) {
 		return nil, errors.New("no devices")
 	}
 
-	for _, device := range devices {
-		if device == config.GetConfig().MemorySmBus {
-			dev := fmt.Sprintf("%s%s", dir, device)
-			f, err := Open(dev)
-			if err != nil {
-				logger.Log(logger.Fields{"device": dev, "error": err}).Error("Unable to open i2c device")
-				continue
-			}
-
-			err = f.File.Close()
-			if err != nil {
-				logger.Log(logger.Fields{"device": dev, "error": err}).Error("Unable to close i2c device")
-			}
-			return &SmBus{Path: dev}, nil
+	configured := strings.TrimSpace(config.GetConfig().MemorySmBus)
+	if len(configured) > 0 {
+		if dev, err := openConfiguredSMBus(dir, configured); err == nil {
+			return dev, nil
 		}
+		logger.Log(logger.Fields{"device": configured}).Warn("Configured memorySmBus is unavailable or not an SMBus adapter. Falling back to auto-detection")
 	}
+
+	for _, device := range devices {
+		if !isSMBusAdapter(device) {
+			continue
+		}
+
+		dev := fmt.Sprintf("%s%s", dir, device)
+		f, err := Open(dev)
+		if err != nil {
+			logger.Log(logger.Fields{"device": dev, "error": err}).Error("Unable to open i2c device")
+			continue
+		}
+
+		err = f.File.Close()
+		if err != nil {
+			logger.Log(logger.Fields{"device": dev, "error": err}).Error("Unable to close i2c device")
+		}
+
+		logger.Log(logger.Fields{"device": device}).Info("Auto-detected SMBus adapter for memory")
+		return &SmBus{Path: dev}, nil
+	}
+
 	return nil, errors.New("no devices")
+}
+
+func openConfiguredSMBus(dir, device string) (*SmBus, error) {
+	if !isSMBusAdapter(device) {
+		return nil, errors.New("not an smbus adapter")
+	}
+
+	dev := fmt.Sprintf("%s%s", dir, device)
+	f, err := Open(dev)
+	if err != nil {
+		logger.Log(logger.Fields{"device": dev, "error": err}).Error("Unable to open i2c device")
+		return nil, err
+	}
+
+	err = f.File.Close()
+	if err != nil {
+		logger.Log(logger.Fields{"device": dev, "error": err}).Error("Unable to close i2c device")
+	}
+
+	return &SmBus{Path: dev}, nil
+}
+
+func isSMBusAdapter(device string) bool {
+	namePath := filepath.Join("/sys/class/i2c-dev", device, "device", "name")
+	data, err := os.ReadFile(namePath)
+	if err != nil {
+		return false
+	}
+
+	return strings.Contains(strings.ToLower(strings.TrimSpace(string(data))), "smbus")
 }
 
 // ioctl is a linux implementation of ioctl

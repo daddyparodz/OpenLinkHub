@@ -140,7 +140,7 @@ xdg-open http://127.0.0.1:27003
   "metrics": true,
   "resumeDelay": 15000,
   "memory": false,
-  "memorySmBus": "i2c-0",
+  "memorySmBus": "",
   "memoryType": 4,
   "exclude": [],
   "decodeMemorySku": true,
@@ -169,7 +169,7 @@ xdg-open http://127.0.0.1:27003
 - metrics: enable or disable Prometheus metrics
 - resumeDelay: amount of time in milliseconds for the program to reinitialize all devices after sleep / resume
 - memory: Enable overview / control over the memory
-- memorySmBus: i2c smbus sensor id
+- memorySmBus: i2c smbus sensor id. Leave it empty to auto-detect the first SMBus adapter, or set it explicitly if your system has multiple SMBus controllers.
 - memoryType: 4 for DDR4, 5 for DDR5
 - exclude: list of device IDs in uint16 format to exclude from program control
 - decodeMemorySku: set to false to manually define `memorySku` value.
