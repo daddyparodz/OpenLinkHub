@@ -103,6 +103,16 @@
                                     </label>
                                 </div>
 
+                                <div class="settings-row">
+                                    <span class="settings-label text-ellipsis">{{ .Lang "txtBrightness" }}</span>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <label for="brightnessSlider" class="m-0">
+                                            <input type="range" id="brightnessSlider" name="brightnessSlider" min="0" max="100" value="{{ $deviceProfile.BrightnessSlider }}" step="1">
+                                        </label>
+                                        <div class="slider-value" id="brightnessSliderValue">{{ $deviceProfile.BrightnessSlider }} %</div>
+                                    </div>
+                                </div>
+
                                 <!-- Delete user profile -->
                                 <div class="settings-row">
                                     <span class="settings-label text-ellipsis">{{ .Lang "txtDeleteProfile" }}</span>
