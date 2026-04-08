@@ -881,9 +881,15 @@ func (d *Device) setDeviceColor() {
 					if rgbCustomColor {
 						r.RGBStartColor = &profile.StartColor
 						r.RGBEndColor = &profile.EndColor
+						r.RGBMiddleColor = &profile.MiddleColor
 					} else {
 						r.RGBStartColor = d.activeRgb.RGBStartColor
 						r.RGBEndColor = d.activeRgb.RGBEndColor
+						r.RGBMiddleColor = d.activeRgb.RGBMiddleColor
+					}
+
+					if r.RGBMiddleColor == nil {
+						r.RGBMiddleColor = &rgb.Color{}
 					}
 
 					index := 0
@@ -891,6 +897,7 @@ func (d *Device) setDeviceColor() {
 					if rgbOverride != nil && rgbOverride.Enabled && d.RgbDevices[k].LedChannels > 0 {
 						r.RGBStartColor = &rgbOverride.RGBStartColor
 						r.RGBEndColor = &rgbOverride.RGBEndColor
+						r.RGBMiddleColor = &rgbOverride.RGBMiddleColor
 						r.RgbModeSpeed = common.FClamp(rgbOverride.RgbModeSpeed, 0.1, 10)
 					}
 
@@ -898,6 +905,7 @@ func (d *Device) setDeviceColor() {
 					r.RGBBrightness = rgb.GetBrightnessValueFloat(*d.DeviceProfile.BrightnessSlider)
 					r.RGBStartColor.Brightness = r.RGBBrightness
 					r.RGBEndColor.Brightness = r.RGBBrightness
+					r.RGBMiddleColor.Brightness = r.RGBBrightness
 					r.ChannelId = k
 
 					r.Inverted = d.InvertRgb

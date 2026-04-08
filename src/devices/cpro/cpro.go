@@ -2128,6 +2128,11 @@ func (d *Device) setDeviceColor(resetColor bool) {
 						r.RGBEndColor = d.activeRgb[i].RGBEndColor
 						r.RGBMiddleColor = d.activeRgb[i].RGBMiddleColor
 					}
+
+					if r.RGBMiddleColor == nil {
+						r.RGBMiddleColor = &rgb.Color{}
+					}
+
 					r.RGBBrightness = rgb.GetBrightnessValueFloat(*d.DeviceProfile.BrightnessSlider)
 					r.RGBStartColor.Brightness = r.RGBBrightness
 					r.RGBEndColor.Brightness = r.RGBBrightness
