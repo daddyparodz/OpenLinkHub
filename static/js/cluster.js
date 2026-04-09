@@ -44,6 +44,12 @@ $(document).ready(function () {
         }
 
         $clusterRgbCells.text(profileName);
+
+        // Keep the switch-profile selection visually aligned with the active RGB
+        // profile, but do not disturb the user while reordering items.
+        if (!dragState && selectedSwitchProfile !== profileName) {
+            selectSwitchProfile(profileName);
+        }
     }
 
     function syncClusterStateFromApi() {
