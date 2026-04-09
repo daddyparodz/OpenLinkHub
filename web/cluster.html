@@ -59,13 +59,9 @@
 
                                 <!-- Profile key switch list -->
                                 <div class="settings-row cluster-switch-row">
-                                    <span class="settings-label cluster-switch-label">Switch Profiles</span>
+                                    <span class="settings-label cluster-switch-label">Switch Profiles (Profile button cycles through list order)</span>
                                     <div class="cluster-switch-panel">
-                                        <p class="cluster-switch-help">Profile button cycles through list order.</p>
-                                        <label for="clusterSwitchProfiles" class="cluster-switch-list-label">
-                                            <select id="clusterSwitchProfiles" class="form-select system-select compact cluster-switch-list" name="clusterSwitchProfiles" multiple size="6">
-                                            </select>
-                                        </label>
+                                        <div id="clusterSwitchProfiles" class="cluster-switch-list" aria-label="Switch profiles" role="listbox"></div>
                                         <div class="cluster-switch-add-row">
                                             <label for="clusterSwitchAddProfile" class="cluster-switch-add-label">
                                                 <select id="clusterSwitchAddProfile" class="form-select system-select cluster-switch-add-select" name="clusterSwitchAddProfile">
@@ -77,16 +73,14 @@
                                             <button id="addClusterSwitchProfile" type="button" class="system-button cluster-switch-btn">Add</button>
                                         </div>
                                         <div class="cluster-switch-manage-row">
-                                            <button id="removeClusterSwitchProfile" type="button" class="system-button cluster-switch-btn cluster-switch-remove">Remove Selected</button>
-                                            <button id="moveUpClusterSwitchProfile" type="button" class="system-button cluster-switch-btn">Up</button>
-                                            <button id="moveDownClusterSwitchProfile" type="button" class="system-button cluster-switch-btn">Down</button>
+                                            <button id="removeClusterSwitchProfile" type="button" class="system-button danger cluster-switch-btn cluster-switch-remove">Remove Selected</button>
                                         </div>
                                         <div class="d-none">
                                             {{ range $key, $mode := $device.DeviceProfile.SwitchProfiles }}
                                             <input type="hidden" class="clusterSwitchProfileCurrent" value="{{ $mode }}">
                                             {{ end }}
                                         </div>
-                                        <button id="saveClusterSwitchProfiles" type="button" class="system-button cluster-switch-save">Save Switch Profiles</button>
+                                        <button id="saveClusterSwitchProfiles" type="button" class="system-button success cluster-switch-save">Save Switch Profiles</button>
                                     </div>
                                 </div>
                             </div>

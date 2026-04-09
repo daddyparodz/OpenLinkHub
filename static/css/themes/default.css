@@ -1394,6 +1394,9 @@ transition: stroke-dashoffset 0.6s ease;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     line-height: 1.2;
+    width: 100%;
+    max-width: none;
+    flex: 0 0 auto;
 }
 
 .cluster-switch-panel {
@@ -1401,24 +1404,11 @@ transition: stroke-dashoffset 0.6s ease;
     flex-direction: column;
     gap: 10px;
     width: 100%;
-    padding: 14px;
-    border: 1px solid var(--border-subtle);
-    border-radius: 10px;
-    background: linear-gradient(180deg, rgba(29, 31, 36, 0.78), rgba(18, 20, 24, 0.78));
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.015);
-}
-
-.cluster-switch-help {
-    margin: 0;
-    font-size: 0.72rem;
-    letter-spacing: 0.04em;
-    color: var(--text-muted);
-    text-transform: uppercase;
-}
-
-.cluster-switch-list-label {
-    width: 100%;
-    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
 .cluster-switch-list {
@@ -1427,21 +1417,94 @@ transition: stroke-dashoffset 0.6s ease;
     min-height: 126px;
     max-height: 180px;
     padding: 8px;
-    border: 1px solid rgba(255,255,255,0.14);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow-y: auto;
+    border: 1px solid var(--border-subtle);
     border-radius: 10px;
-    background: rgba(9, 10, 13, 0.95);
-    color: var(--text-main);
+    background: var(--bg-card);
+    color: var(--text-muted);
     font-size: 0.95rem;
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease,
+            color 0.2s ease;
 }
 
-.cluster-switch-list option {
-    padding: 6px 8px;
+.cluster-switch-list:hover {
+    border-color: rgba(255,255,255,0.15);
+    color: var(--text-main);
+}
+
+.cluster-switch-list:focus,
+.cluster-switch-list:focus-within {
+    outline: none;
+    border-color: rgba(255,255,255,0.25);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.08);
+    color: var(--text-main);
+}
+
+.cluster-switch-item {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 1px solid transparent;
     border-radius: 6px;
+    background: var(--bg-card);
+    color: var(--text-main);
+    text-align: left;
+    cursor: grab;
+    user-select: none;
+    transition:
+            border-color 0.2s ease,
+            background 0.2s ease,
+            color 0.2s ease,
+            opacity 0.2s ease;
 }
 
-.cluster-switch-list option:checked {
-    background: rgba(31, 111, 245, 0.55) !important;
+.cluster-switch-item:hover {
+    border-color: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.03);
+}
+
+.cluster-switch-item:active {
+    cursor: grabbing;
+}
+
+.cluster-switch-item.selected {
+    background: rgba(31, 111, 245, 0.22);
+    border-color: rgba(80, 149, 255, 0.4);
     color: #ffffff;
+}
+
+.cluster-switch-item.dragging {
+    opacity: 0.45;
+}
+
+.cluster-switch-item.drop-before {
+    border-top-color: rgba(80, 149, 255, 0.75);
+}
+
+.cluster-switch-item.drop-after {
+    border-bottom-color: rgba(80, 149, 255, 0.75);
+}
+
+.cluster-switch-item-label {
+    min-width: 0;
+}
+
+.cluster-switch-item-grip {
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    font-size: 0.78rem;
+}
+
+body.cluster-switch-dragging {
+    user-select: none;
 }
 
 .cluster-switch-add-row {
@@ -1462,22 +1525,14 @@ transition: stroke-dashoffset 0.6s ease;
 
 .cluster-switch-manage-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 70px 70px;
+    grid-template-columns: minmax(0, 1fr);
     gap: 8px;
     align-items: center;
 }
 
 .cluster-switch-btn {
     min-height: 38px;
-    color: #dfe8f5 !important;
     font-weight: 500;
-    background: linear-gradient(180deg, #3b414d, #2d323c);
-    border-color: rgba(135, 154, 184, 0.22);
-}
-
-.cluster-switch-btn:hover {
-    background: linear-gradient(180deg, #495263, #353c48);
-    border-color: rgba(166, 188, 222, 0.34);
 }
 
 .cluster-switch-remove {
@@ -1488,15 +1543,7 @@ transition: stroke-dashoffset 0.6s ease;
     width: 100%;
     min-height: 40px;
     margin-top: 4px;
-    color: #e8f2ff !important;
-    background: linear-gradient(180deg, #1f6ff5, #1559c9);
-    border-color: rgba(80, 149, 255, 0.5);
     font-weight: 600;
-}
-
-.cluster-switch-save:hover {
-    background: linear-gradient(180deg, #2b7dff, #1b64da);
-    border-color: rgba(122, 176, 255, 0.6);
 }
 
 @media (max-width: 1535.98px) {

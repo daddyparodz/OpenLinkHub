@@ -65,15 +65,47 @@ $(document).ready(function () {
         });
     });
 
+    const $clusterSwitchProfiles = $('#clusterSwitchProfiles');
+    let selectedSwitchProfile = '';
+    let suppressSwitchApplyUntil = 0;
+    let dragState = null;
+
     function getSwitchProfilesInOrder() {
         const values = [];
-        $('#clusterSwitchProfiles option').each(function () {
-            const value = ($(this).val() || '').trim();
+        $clusterSwitchProfiles.find('.cluster-switch-item').each(function () {
+            const value = ($(this).data('profile') || '').toString().trim();
             if (value.length > 0) {
                 values.push(value);
             }
         });
         return values;
+    }
+
+    function renderSwitchProfiles() {
+        const profiles = getSwitchProfilesInOrder();
+        $clusterSwitchProfiles.empty();
+
+        profiles.forEach(function (profileName) {
+            const $item = $('<div>', {
+                class: 'cluster-switch-item' + (profileName === selectedSwitchProfile ? ' selected' : ''),
+                'data-profile': profileName,
+                tabindex: 0,
+                role: 'option',
+                'aria-selected': profileName === selectedSwitchProfile ? 'true' : 'false'
+            });
+
+            $item.append($('<span>', {
+                class: 'cluster-switch-item-label',
+                text: profileName
+            }));
+
+            $item.append($('<span>', {
+                class: 'cluster-switch-item-grip',
+                text: ':::'
+            }));
+
+            $clusterSwitchProfiles.append($item);
+        });
     }
 
     function appendSwitchProfile(profileName) {
@@ -84,9 +116,90 @@ $(document).ready(function () {
         if (existing.includes(profileName)) {
             return;
         }
-        $('#clusterSwitchProfiles').append(
-            $('<option>', { value: profileName, text: profileName })
+        $clusterSwitchProfiles.append(
+            $('<div>', {
+                class: 'cluster-switch-item',
+                'data-profile': profileName,
+                tabindex: 0,
+                role: 'option',
+                'aria-selected': 'false'
+            }).append(
+                $('<span>', { class: 'cluster-switch-item-label', text: profileName }),
+                $('<span>', { class: 'cluster-switch-item-grip', text: ':::' })
+            )
         );
+    }
+
+    function selectSwitchProfile(profileName) {
+        selectedSwitchProfile = profileName || '';
+        renderSwitchProfiles();
+    }
+
+    function moveSwitchProfile(profileName, targetName, placeAfter) {
+        const profiles = getSwitchProfilesInOrder();
+        const original = profiles.slice();
+        const fromIndex = profiles.indexOf(profileName);
+        const targetIndex = profiles.indexOf(targetName);
+
+        if (fromIndex === -1 || targetIndex === -1 || fromIndex === targetIndex) {
+            return false;
+        }
+
+        profiles.splice(fromIndex, 1);
+        let insertIndex = targetIndex;
+        if (fromIndex < targetIndex) {
+            insertIndex -= 1;
+        }
+        if (placeAfter) {
+            insertIndex += 1;
+        }
+        profiles.splice(insertIndex, 0, profileName);
+
+        if (JSON.stringify(profiles) === JSON.stringify(original)) {
+            return false;
+        }
+
+        $clusterSwitchProfiles.empty();
+        profiles.forEach(function (name) {
+            appendSwitchProfile(name);
+        });
+        renderSwitchProfiles();
+        return true;
+    }
+
+    function clearDropIndicators() {
+        $clusterSwitchProfiles.find('.cluster-switch-item')
+            .removeClass('drop-before drop-after dragging');
+    }
+
+    function applySwitchProfile(profileName) {
+        const deviceId = $("#deviceId").val();
+        const payload = {
+            deviceId: deviceId,
+            channelId: 0,
+            profile: profileName
+        };
+
+        $.ajax({
+            url: '/api/color',
+            type: 'POST',
+            data: JSON.stringify(payload, null, 2),
+            cache: false,
+            success: function(response) {
+                try {
+                    if (response.status === 1) {
+                        const rgbOption = '0;' + profileName;
+                        if ($('#clusterRgbProfile option[value="' + rgbOption + '"]').length > 0) {
+                            $('#clusterRgbProfile').val(rgbOption);
+                        }
+                    } else {
+                        toast.warning(response.message);
+                    }
+                } catch (err) {
+                    toast.warning(response.message);
+                }
+            }
+        });
     }
 
     // Initialize switch-profile list from server-provided values.
@@ -102,78 +215,124 @@ $(document).ready(function () {
         [currentProfile, 'static', 'off'].forEach(appendSwitchProfile);
     }
 
+    const currentRgbProfile = (($('#clusterRgbProfile').val() || '').split(';'))[1] || '';
+    selectedSwitchProfile = currentRgbProfile;
+    renderSwitchProfiles();
+
     $('#addClusterSwitchProfile').on('click', function () {
         const profileName = ($('#clusterSwitchAddProfile').val() || '').trim();
         if (profileName.length < 1) {
             return false;
         }
         appendSwitchProfile(profileName);
+        selectSwitchProfile(profileName);
         return false;
     });
 
     $('#removeClusterSwitchProfile').on('click', function () {
-        $('#clusterSwitchProfiles option:selected').remove();
-        return false;
-    });
-
-    $('#moveUpClusterSwitchProfile').on('click', function () {
-        const selected = $('#clusterSwitchProfiles option:selected');
-        selected.each(function () {
-            const prev = $(this).prev();
-            if (prev.length > 0) {
-                $(this).insertBefore(prev);
-            }
-        });
-        return false;
-    });
-
-    $('#moveDownClusterSwitchProfile').on('click', function () {
-        const selected = $($('#clusterSwitchProfiles option:selected').get().reverse());
-        selected.each(function () {
-            const next = $(this).next();
-            if (next.length > 0) {
-                $(this).insertAfter(next);
-            }
-        });
-        return false;
-    });
-
-    // Selecting a switch-profile item applies that RGB profile immediately.
-    $('#clusterSwitchProfiles').on('change', function () {
-        const selected = $('#clusterSwitchProfiles option:selected').first().val();
-        if (!selected || selected.length < 1) {
+        if (!selectedSwitchProfile) {
             return false;
         }
 
-        const deviceId = $("#deviceId").val();
-        const payload = {
-            deviceId: deviceId,
-            channelId: 0,
-            profile: selected
-        };
-
-        $.ajax({
-            url: '/api/color',
-            type: 'POST',
-            data: JSON.stringify(payload, null, 2),
-            cache: false,
-            success: function(response) {
-                try {
-                    if (response.status === 1) {
-                        const rgbOption = '0;' + selected;
-                        if ($('#clusterRgbProfile option[value="' + rgbOption + '"]').length > 0) {
-                            $('#clusterRgbProfile').val(rgbOption);
-                        }
-                    } else {
-                        toast.warning(response.message);
-                    }
-                } catch (err) {
-                    toast.warning(response.message);
-                }
+        $clusterSwitchProfiles.find('.cluster-switch-item').each(function () {
+            if (($(this).data('profile') || '').toString() === selectedSwitchProfile) {
+                $(this).remove();
             }
         });
 
+        const remainingProfiles = getSwitchProfilesInOrder();
+        selectedSwitchProfile = remainingProfiles.length > 0 ? remainingProfiles[0] : '';
+        renderSwitchProfiles();
         return false;
+    });
+
+    $clusterSwitchProfiles.on('click', '.cluster-switch-item', function () {
+        const profileName = ($(this).data('profile') || '').toString();
+        if (!profileName) {
+            return false;
+        }
+
+        selectSwitchProfile(profileName);
+        if (Date.now() < suppressSwitchApplyUntil) {
+            return false;
+        }
+        applySwitchProfile(profileName);
+        return false;
+    });
+
+    $clusterSwitchProfiles.on('mousedown', '.cluster-switch-item', function (event) {
+        if (event.which !== 1) {
+            return;
+        }
+
+        const profileName = ($(this).data('profile') || '').toString();
+        if (!profileName) {
+            return;
+        }
+
+        dragState = {
+            profileName: profileName,
+            startX: event.clientX,
+            startY: event.clientY,
+            moved: false
+        };
+
+        $(this).addClass('dragging');
+        $('body').addClass('cluster-switch-dragging');
+        event.preventDefault();
+    });
+
+    $(document).on('mousemove', function (event) {
+        if (!dragState) {
+            return;
+        }
+
+        const travelX = Math.abs(event.clientX - dragState.startX);
+        const travelY = Math.abs(event.clientY - dragState.startY);
+        if (!dragState.moved && (travelX + travelY) < 6) {
+            return;
+        }
+
+        dragState.moved = true;
+        suppressSwitchApplyUntil = Date.now() + 500;
+
+        const targetNode = document.elementFromPoint(event.clientX, event.clientY);
+        if (!targetNode) {
+            return;
+        }
+
+        const $targetItem = $(targetNode).closest('.cluster-switch-item');
+        if ($targetItem.length === 0) {
+            return;
+        }
+
+        const targetProfile = ($targetItem.data('profile') || '').toString();
+        if (!targetProfile || targetProfile === dragState.profileName) {
+            return;
+        }
+
+        clearDropIndicators();
+        const rect = $targetItem.get(0).getBoundingClientRect();
+        const placeAfter = (event.clientY - rect.top) > (rect.height / 2);
+        $targetItem.addClass(placeAfter ? 'drop-after' : 'drop-before');
+
+        if (moveSwitchProfile(dragState.profileName, targetProfile, placeAfter)) {
+            $clusterSwitchProfiles.find('.cluster-switch-item').each(function () {
+                if (($(this).data('profile') || '').toString() === dragState.profileName) {
+                    $(this).addClass('dragging');
+                }
+            });
+        }
+    });
+
+    $(document).on('mouseup', function () {
+        if (!dragState) {
+            return;
+        }
+
+        clearDropIndicators();
+        $('body').removeClass('cluster-switch-dragging');
+        dragState = null;
     });
 
     $('#saveClusterSwitchProfiles').on('click', function () {
