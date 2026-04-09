@@ -2,6 +2,7 @@
 $(document).ready(function () {
     const $clusterRgbProfile = $('#clusterRgbProfile');
     const $clusterRgbCells = $('.cluster-rgb-cell');
+    const clusterSyncIntervalMs = 400;
     window.i18n = {
         locale: null,
         values: {},
@@ -87,6 +88,7 @@ $(document).ready(function () {
         pf["profile"] = profile[1];
 
         const json = JSON.stringify(pf, null, 2);
+        syncClusterRgbDisplay(profile[1]);
 
         $.ajax({
             url: '/api/color',
@@ -99,10 +101,15 @@ $(document).ready(function () {
                         syncClusterRgbDisplay(profile[1]);
                     } else {
                         toast.warning(response.message);
+                        syncClusterStateFromApi();
                     }
                 } catch (err) {
                     toast.warning(response.message);
+                    syncClusterStateFromApi();
                 }
+            },
+            error: function () {
+                syncClusterStateFromApi();
             }
         });
     });
@@ -222,6 +229,8 @@ $(document).ready(function () {
             profile: profileName
         };
 
+        syncClusterRgbDisplay(profileName);
+
         $.ajax({
             url: '/api/color',
             type: 'POST',
@@ -233,10 +242,15 @@ $(document).ready(function () {
                         syncClusterRgbDisplay(profileName);
                     } else {
                         toast.warning(response.message);
+                        syncClusterStateFromApi();
                     }
                 } catch (err) {
                     toast.warning(response.message);
+                    syncClusterStateFromApi();
                 }
+            },
+            error: function () {
+                syncClusterStateFromApi();
             }
         });
     }
@@ -462,5 +476,5 @@ $(document).ready(function () {
     }
 
     syncClusterStateFromApi();
-    setInterval(syncClusterStateFromApi, 1500);
+    setInterval(syncClusterStateFromApi, clusterSyncIntervalMs);
 });

@@ -977,12 +977,15 @@ func (d *Device) setupClusterController() {
 		return
 	}
 
-	if !d.DeviceProfile.RGBCluster {
-		return
-	}
-
 	for i := 0; i < len(d.DeviceProfile.ExternalHubs); i++ {
 		externalHub := d.DeviceProfile.ExternalHubs[i]
+		serial := fmt.Sprintf("%s-%d", d.Serial, externalHub.PortId)
+
+		if !d.DeviceProfile.RGBCluster {
+			cluster.Get().RemoveDeviceControllerBySerial(serial)
+			continue
+		}
+
 		lightChannels := 0
 		for _, device := range d.Devices {
 			if device.PortId == externalHub.PortId && device.LedChannels > 0 {
@@ -991,12 +994,13 @@ func (d *Device) setupClusterController() {
 		}
 
 		if lightChannels < 1 {
+			cluster.Get().RemoveDeviceControllerBySerial(serial)
 			continue
 		}
 
 		clusterController := &common.ClusterController{
 			Product:      d.Product,
-			Serial:       fmt.Sprintf("%s-%d", d.Serial, externalHub.PortId),
+			Serial:       serial,
 			LedChannels:  uint32(lightChannels),
 			WriteColorEx: d.writeColorCluster,
 			ChannelId:    int(externalHub.PortId),
@@ -1004,6 +1008,15 @@ func (d *Device) setupClusterController() {
 
 		cluster.Get().AddDeviceController(clusterController)
 	}
+}
+
+func (d *Device) refreshExternalHubState(resetColor bool) {
+	d.getDevices()
+	d.saveDeviceProfile()
+	d.setColorEndpoint()
+	d.setupOpenRGBController()
+	d.setupClusterController()
+	d.setDeviceColor(resetColor)
 }
 
 // setupOpenRGBController will create RGBController object for OpenRGB Client Integration
@@ -1832,9 +1845,7 @@ func (d *Device) ResetRgb() {
 			d.activeRgb[i] = nil
 		}
 	}
-	d.getDevices()
-	d.saveDeviceProfile()
-	d.setDeviceColor(true)
+	d.refreshExternalHubState(true)
 }
 
 // UpdateExternalHubDeviceType will update a device type connected to the external-LED hub
@@ -1901,9 +1912,7 @@ func (d *Device) UpdateExternalHubDeviceAmount(portId, externalDevices int) uint
 					d.activeRgb[i] = nil
 				}
 			}
-			d.getDevices()
-			d.saveDeviceProfile()
-			d.setDeviceColor(true)
+			d.refreshExternalHubState(true)
 			return 1
 		}
 	}

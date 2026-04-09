@@ -126,10 +126,18 @@ func Get() *Device {
 // AddDeviceController will add a new Cluster Controller
 func (d *Device) AddDeviceController(controller *common.ClusterController) {
 	d.mutex.Lock()
+	wasEmpty := len(d.Controllers) == 0
+	for i, existing := range d.Controllers {
+		if existing.Serial == controller.Serial {
+			d.Controllers[i] = controller
+			d.mutex.Unlock()
+			return
+		}
+	}
 	d.Controllers = append(d.Controllers, controller)
 	d.mutex.Unlock()
 
-	if len(d.Controllers) == 1 {
+	if wasEmpty {
 		d.setDeviceColor()
 	}
 }
@@ -587,18 +595,28 @@ func (d *Device) setDeviceColor() {
 		rand.New(rand.NewSource(time.Now().UnixNano()))
 
 		for {
+			d.mutex.RLock()
+			controllers := make([]*common.ClusterController, len(d.Controllers))
+			copy(controllers, d.Controllers)
+			activeRgb := d.activeRgb
+			deviceExit := d.Exit
+			d.mutex.RUnlock()
+
+			if deviceExit || activeRgb == nil {
+				return
+			}
+
 			lightChannels := 0
-			for k := range d.Controllers {
-				lightChannels += int(d.Controllers[k].LedChannels)
+			for _, controller := range controllers {
+				if controller != nil {
+					lightChannels += int(controller.LedChannels)
+				}
 			}
 
 			select {
-			case <-d.activeRgb.Exit:
+			case <-activeRgb.Exit:
 				return
 			default:
-				if d.Exit {
-					return
-				}
 				buff := d.generateRgbEffect(lightChannels, &startTime, d.DeviceProfile.RGBProfile)
 				d.distributeColors(buff)
 				time.Sleep(20 * time.Millisecond)
@@ -624,6 +642,11 @@ func (d *Device) generateRgbEffect(channels int, startTime *time.Time, rgbProfil
 		rgbCustomColor = false
 	}
 
+	activeRgb := d.activeRgb
+	if activeRgb == nil {
+		return make([]byte, channels*3)
+	}
+
 	r := rgb.New(
 		channels,
 		rgbModeSpeed,
@@ -639,8 +662,8 @@ func (d *Device) generateRgbEffect(channels int, startTime *time.Time, rgbProfil
 		r.RGBStartColor = &profile.StartColor
 		r.RGBEndColor = &profile.EndColor
 	} else {
-		r.RGBStartColor = d.activeRgb.RGBStartColor
-		r.RGBEndColor = d.activeRgb.RGBEndColor
+		r.RGBStartColor = activeRgb.RGBStartColor
+		r.RGBEndColor = activeRgb.RGBEndColor
 	}
 
 	// Brightness
@@ -730,7 +753,7 @@ func (d *Device) generateRgbEffect(channels int, startTime *time.Time, rgbProfil
 		}
 	case "colorshift":
 		{
-			r.Colorshift(startTime, d.activeRgb)
+			r.Colorshift(startTime, activeRgb)
 			buff = r.Output
 		}
 	case "circleshift":
@@ -750,7 +773,7 @@ func (d *Device) generateRgbEffect(channels int, startTime *time.Time, rgbProfil
 		}
 	case "colorwarp":
 		{
-			r.Colorwarp(startTime, d.activeRgb)
+			r.Colorwarp(startTime, activeRgb)
 			buff = r.Output
 		}
 	case "nebula":
