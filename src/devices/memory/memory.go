@@ -144,7 +144,9 @@ var (
 	pwd                   = ""
 	deviceRefreshInterval = 1000
 	maximumRegisters      = 8
-	colorAddresses        = []byte{0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f} // DDR4
+	ddr4ColorAddresses    = []byte{0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f}
+	ddr5ColorAddresses    = []byte{0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f}
+	colorAddresses        = append([]byte(nil), ddr4ColorAddresses...)
 	temperatureAddresses  = []string{"0018", "0019", "001a", "001b", "001c", "001d", "001e", "001f"}
 	basePath              = "/sys/bus/i2c/drivers"
 	rgbProfileUpgrade     = []string{"led", "nebula", "marquee", "spiralrainbow", "gradient", "pastelrainbow", "pastelspiralrainbow"}
@@ -177,7 +179,7 @@ var (
 
 func Init(_, _ uint16, _, path string) *common.Device {
 	mt := config.GetConfig().MemoryType
-	if mt != 4 && mt != 5 {
+	if mt != 0 && mt != 4 && mt != 5 {
 		logger.Log(logger.Fields{"memoryType": mt, "device": path}).Error("Invalid memory type")
 		return nil
 	}
@@ -214,6 +216,14 @@ func Init(_, _ uint16, _, path string) *common.Device {
 		RuntimeMemoryType: mt,
 	}
 
+	if mt == 0 {
+		mt = d.autoDetectMemoryType()
+		if mt == 0 {
+			logger.Log(logger.Fields{"device": path}).Warn("Unable to auto-detect memory type")
+			return nil
+		}
+	}
+
 	d.setRuntimeMemoryType(mt)
 	d.getDebugMode()       // Debug mode
 	d.loadRgb()            // Load RGB
@@ -238,9 +248,78 @@ func Init(_, _ uint16, _, path string) *common.Device {
 
 func (d *Device) setRuntimeMemoryType(memoryType int) {
 	d.RuntimeMemoryType = memoryType
-	if memoryType == 5 {
-		colorAddresses = []byte{0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f} // DDR5
+	switch memoryType {
+	case 5:
+		colorAddresses = append([]byte(nil), ddr5ColorAddresses...)
+	default:
+		colorAddresses = append([]byte(nil), ddr4ColorAddresses...)
 	}
+}
+
+func (d *Device) autoDetectMemoryType() int {
+	for _, memoryType := range []int{4, 5} {
+		addresses := ddr4ColorAddresses
+		if memoryType == 5 {
+			addresses = ddr5ColorAddresses
+		}
+
+		for _, address := range addresses {
+			if _, err := smbus.ReadRegister(d.dev.File, address, 0x00); err == nil {
+				logger.Log(logger.Fields{"memoryType": memoryType, "register": address}).Info("Auto-detected memory type")
+				return memoryType
+			}
+		}
+	}
+	return 0
+}
+
+func (d *Device) getMemoryMetadata(memorySku string) (string, int, int) {
+	memorySku = strings.TrimSpace(memorySku)
+	if len(memorySku) > 15 {
+		dimmInfo := memorySku
+		vendor := dimmInfo[0:2]
+		if vendor == "CM" {
+			line := dimmInfo[2:3]
+			if d.RuntimeMemoryType == 4 {
+				switch line {
+				case "U":
+					return "VENGEANCE LED", 0, 0
+				case "W":
+					return "VENGEANCE RGB PRO", 10, 0x31
+				case "H":
+					return "VENGEANCE RGB PRO SL", 10, 0x31
+				case "N":
+					return "VENGEANCE RGB RT", 10, 0x31
+				case "G":
+					return "VENGEANCE RGB RS", 6, 0x31
+				case "D":
+					return "DOMINATOR PLATINUM", 0, 0
+				case "T":
+					return "DOMINATOR PLATINUM RGB", 12, 0x31
+				case "K":
+					return "VENGEANCE LPX", 0, 0
+				case "P":
+					return "DOMINATOR TITANIUM", 0, 0
+				}
+			} else {
+				switch line {
+				case "K":
+					return "VENGEANCE", 0, 0
+				case "H":
+					return "VENGEANCE RGB", 10, 0x31
+				case "T":
+					return "DOMINATOR PLATINUM RGB", 12, 0x31
+				case "P":
+					return "DOMINATOR TITANIUM RGB", 11, 0x31
+				}
+			}
+		}
+	}
+
+	if d.RuntimeMemoryType == 4 {
+		return "Corsair DDR4 RGB Memory", 10, 0x31
+	}
+	return "Corsair DDR5 RGB Memory", 10, 0x31
 }
 
 // createDevice will create new device register object
@@ -548,15 +627,15 @@ func (d *Device) getDevices() int {
 			logger.Log(logger.Fields{"address": colorAddresses[i]}).Info("Probing address")
 		}
 
-		if slices.Contains(config.GetConfig().EnhancementKits, colorAddresses[i]) {
+		if slices.Contains(config.GetConfig().EnhancementKits, int(colorAddresses[i])) {
 			d.setEnhancementKit(colorAddresses[i])
 		}
 
 		// Probe for register
 		_, err := smbus.ReadRegister(d.dev.File, colorAddresses[i], 0x00)
 		if err != nil {
-			if !slices.Contains(config.GetConfig().EnhancementKits, colorAddresses[i]) {
-				if !slices.Contains(config.GetConfig().MemoryRegisterOverride, colorAddresses[i]) {
+			if !slices.Contains(config.GetConfig().EnhancementKits, int(colorAddresses[i])) {
+				if !slices.Contains(config.GetConfig().MemoryRegisterOverride, int(colorAddresses[i])) {
 					logger.Log(logger.Fields{"register": colorAddresses[i], "err": err}).Info("No such register found. Skipping...")
 					continue
 				}
@@ -590,187 +669,111 @@ func (d *Device) getDevices() int {
 		}
 
 		if len(memorySku) < 1 {
-			logger.Log(logger.Fields{"register": colorAddresses[i]}).Warn("No memory SKU available. Skipping register")
+			logger.Log(logger.Fields{"register": colorAddresses[i]}).Warn("No memory SKU available. Using generic Corsair RGB metadata")
+		}
+
+		if d.Debug && len(memorySku) > 0 {
+			logger.Log(logger.Fields{"dimmInfo": memorySku}).Info("Memory DIMM Info")
+		}
+
+		skuLine, ledChannels, colorRegister := d.getMemoryMetadata(memorySku)
+		if len(skuLine) < 1 {
 			continue
 		}
 
-		buf := []byte(memorySku)
-		if len(buf) > 15 {
-			// https://help.corsair.com/hc/en-us/articles/8528259685901-RAM-How-to-Read-the-CORSAIR-memory-part-number
-			// https://help.corsair.com/hc/en-us/articles/360051011331-RAM-DDR4-memory-module-dimensions
-			dimmInfo := string(buf)
+		temperature := 0.0
+		temperatureString := ""
 
-			if d.Debug {
-				logger.Log(logger.Fields{"dimmInfo": dimmInfo}).Info("Memory DIMM Info")
+		label := "Set Label"
+		if d.DeviceProfile != nil {
+			if lb, ok := d.DeviceProfile.Labels[i]; ok {
+				if len(lb) > 0 {
+					label = lb
+				}
 			}
+		} else {
+			logger.Log(logger.Fields{"serial": d.Serial}).Warn("DeviceProfile is not set, probably first startup")
+		}
 
-			skuLine := ""
-			ledChannels := 0
-			vendor := dimmInfo[0:2]
-			colorRegister := 0
-
-			if d.Debug {
-				logger.Log(logger.Fields{"dimmInfoVendor": vendor}).Info("Memory DIMM Info - Vendor")
+		rgbProfile := "static"
+		if d.DeviceProfile != nil {
+			if rp, ok := d.DeviceProfile.RGBProfiles[i]; ok {
+				if d.GetRgbProfile(rp) != nil {
+					rgbProfile = rp
+				} else {
+					logger.Log(logger.Fields{"serial": d.Serial, "profile": rp}).Warn("Tried to apply non-existing rgb profile")
+				}
 			}
+		} else {
+			logger.Log(logger.Fields{"serial": d.Serial}).Warn("DeviceProfile is not set, probably first startup")
+		}
 
-			if vendor == "CM" { // Corsair Memory
-				line := dimmInfo[2:3]
-				if d.Debug {
-					logger.Log(logger.Fields{"dimmInfoLine": line}).Info("Memory DIMM Info - Data")
-				}
+		dimmInfo := memorySku
+		if len(dimmInfo) < 1 {
+			dimmInfo = skuLine
+		}
 
-				if d.RuntimeMemoryType == 4 {
-					// DDR4
-					switch line {
-					case "U":
-						skuLine = "VENGEANCE LED"
-					case "W":
-						skuLine = "VENGEANCE RGB PRO"
-						ledChannels = 10
-						colorRegister = 0x31
-					case "H":
-						skuLine = "VENGEANCE RGB PRO SL"
-						ledChannels = 10
-						colorRegister = 0x31
-					case "N":
-						skuLine = "VENGEANCE RGB RT"
-						ledChannels = 10
-						colorRegister = 0x31
-					case "G":
-						skuLine = "VENGEANCE RGB RS"
-						ledChannels = 6
-						colorRegister = 0x31
-					case "D":
-						skuLine = "DOMINATOR PLATINUM"
-					case "T":
-						skuLine = "DOMINATOR PLATINUM RGB"
-						ledChannels = 12
-						colorRegister = 0x31
-					case "K":
-						skuLine = "VENGEANCE LPX"
-					case "P":
-						skuLine = "DOMINATOR TITANIUM"
-						//ledChannels = 11
-					}
-				} else {
-					// DDR5
-					switch line {
-					case "K":
-						skuLine = "VENGEANCE"
-					case "H":
-						skuLine = "VENGEANCE RGB"
-						ledChannels = 10
-						colorRegister = 0x31
-					case "T":
-						skuLine = "DOMINATOR PLATINUM RGB"
-						ledChannels = 12
-						colorRegister = 0x31
-					case "P":
-						skuLine = "DOMINATOR TITANIUM RGB"
-						ledChannels = 11
-						colorRegister = 0x31
-					}
-				}
+		device := &Devices{
+			ChannelId:         i,
+			DeviceId:          i,
+			Sku:               dimmInfo,
+			MemoryType:        d.RuntimeMemoryType,
+			LedChannels:       uint8(ledChannels),
+			ColorRegister:     uint8(colorRegister),
+			Name:              skuLine,
+			Temperature:       float32(temperature),
+			TemperatureString: temperatureString,
+			Label:             label,
+			RGB:               rgbProfile,
+		}
 
-				temperature := 0.0
-				temperatureString := ""
+		if len(d.SkuLine) < 1 {
+			d.SkuLine = skuLine
+		}
+		if d.getEnhancementKit(colorAddresses[i]) {
+			device.Size = 0
+			device.Latency = 0
+			device.Speed = 0
+			device.Temperature = 0
+			device.Name = "LIGHT ENHANCEMENT KIT"
+			device.HasTemps = false
+		}
 
-				label := "Set Label"
-				if d.DeviceProfile != nil {
-					// Device label
-					if lb, ok := d.DeviceProfile.Labels[i]; ok {
-						if len(lb) > 0 {
-							label = lb
+		if config.GetConfig().RamTempViaHwmon {
+			if !d.getEnhancementKit(colorAddresses[i]) {
+				if d.RuntimeMemoryType == 5 {
+					hwmonTemperatureFile := d.getHwMonTemperatureFile(baseDevice, "spd5118")
+					if len(hwmonTemperatureFile) > 0 {
+						device.HwmonPath = hwmonTemperatureFile
+						hwmonTemp, err := d.getTemperature(hwmonTemperatureFile)
+						if err == nil {
+							device.Temperature = hwmonTemp
+							device.TemperatureString = dashboard.GetDashboard().TemperatureToString(hwmonTemp)
+							device.HasTemps = true
 						}
 					}
+					baseDevice += i + 1
 				} else {
-					logger.Log(logger.Fields{"serial": d.Serial}).Warn("DeviceProfile is not set, probably first startup")
-				}
-
-				// Get a persistent speed profile. Fallback to Normal is anything fails
-				rgbProfile := "static"
-				if d.DeviceProfile != nil {
-					// Profile is set
-					if rp, ok := d.DeviceProfile.RGBProfiles[i]; ok {
-						// Profile device channel exists
-						if d.GetRgbProfile(rp) != nil { // Speed profile exists in configuration
-							// Speed profile exists in configuration
-							rgbProfile = rp
-						} else {
-							logger.Log(logger.Fields{"serial": d.Serial, "profile": rp}).Warn("Tried to apply non-existing rgb profile")
-						}
-					} else {
-						logger.Log(logger.Fields{"serial": d.Serial, "profile": rp}).Warn("Tried to apply rgb profile to the non-existing channel")
+					device.HwmonPath = fmt.Sprintf(
+						"/sys/bus/i2c/drivers/jc42/%d-%s/hwmon",
+						d.getI2cSensor(),
+						temperatureAddresses[i],
+					)
+					hwmonTemp, err := d.getTemperature(device.HwmonPath)
+					if err == nil {
+						device.Temperature = hwmonTemp
+						device.TemperatureString = dashboard.GetDashboard().TemperatureToString(hwmonTemp)
+						device.HasTemps = true
 					}
-				} else {
-					logger.Log(logger.Fields{"serial": d.Serial}).Warn("DeviceProfile is not set, probably first startup")
-				}
-
-				if len(skuLine) > 0 {
-					device := &Devices{
-						ChannelId:         i,
-						DeviceId:          i,
-						Sku:               dimmInfo,
-						MemoryType:        d.RuntimeMemoryType,
-						LedChannels:       uint8(ledChannels),
-						ColorRegister:     uint8(colorRegister),
-						Name:              skuLine,
-						Temperature:       float32(temperature),
-						TemperatureString: temperatureString,
-						Label:             label,
-						RGB:               rgbProfile,
-					}
-
-					if len(d.SkuLine) < 1 {
-						d.SkuLine = skuLine
-					}
-					if d.getEnhancementKit(colorAddresses[i]) {
-						device.Size = 0
-						device.Latency = 0
-						device.Speed = 0
-						device.Temperature = 0
-						device.Name = "LIGHT ENHANCEMENT KIT"
-						device.HasTemps = false
-					}
-
-					if config.GetConfig().RamTempViaHwmon {
-						if !d.getEnhancementKit(colorAddresses[i]) {
-							if d.RuntimeMemoryType == 5 {
-								hwmonTemperatureFile := d.getHwMonTemperatureFile(baseDevice, "spd5118")
-								if len(hwmonTemperatureFile) > 0 {
-									device.HwmonPath = hwmonTemperatureFile
-									hwmonTemp, err := d.getTemperature(hwmonTemperatureFile)
-									if err == nil {
-										device.Temperature = hwmonTemp
-										device.TemperatureString = dashboard.GetDashboard().TemperatureToString(hwmonTemp)
-										device.HasTemps = true
-									}
-								}
-								baseDevice += i + 1
-							} else {
-								device.HwmonPath = fmt.Sprintf(
-									"/sys/bus/i2c/drivers/jc42/%d-%s/hwmon",
-									d.getI2cSensor(),
-									temperatureAddresses[i],
-								)
-								hwmonTemp, err := d.getTemperature(device.HwmonPath)
-								if err == nil {
-									device.Temperature = hwmonTemp
-									device.TemperatureString = dashboard.GetDashboard().TemperatureToString(hwmonTemp)
-									device.HasTemps = true
-								}
-							}
-						}
-					}
-
-					if d.Debug {
-						logger.Log(logger.Fields{"memoryDevice": device}).Info("Memory DIMM Info - Device")
-					}
-					devices[i] = device
-					d.LEDChannels += ledChannels
 				}
 			}
 		}
+
+		if d.Debug {
+			logger.Log(logger.Fields{"memoryDevice": device}).Info("Memory DIMM Info - Device")
+		}
+		devices[i] = device
+		d.LEDChannels += ledChannels
 	}
 
 	d.Devices = devices
