@@ -22,7 +22,7 @@ var (
 	pwd                   = ""
 	d                     *Device
 	deviceRefreshInterval = 1000
-	rgbProfileUpgrade     = []string{"gradient", "pastelrainbow", "pastelspiralrainbow"}
+	rgbProfileUpgrade     = []string{"off", "gradient", "pastelrainbow", "pastelspiralrainbow"}
 )
 
 type DeviceProfile struct {
@@ -38,7 +38,7 @@ type Device struct {
 	DeviceProfile   *DeviceProfile
 	Rgb             *rgb.RGB
 	activeRgb       *rgb.ActiveRGB
-	Controllers     []*common.ClusterController
+	Controllers     []*common.ClusterController `json:"-"`
 	mutex           sync.RWMutex
 	Exit            bool
 	RGBModes        []string
@@ -73,6 +73,7 @@ func Init() *Device {
 			"spinner",
 			"spiralrainbow",
 			"pastelspiralrainbow",
+			"off",
 			"static",
 			"storm",
 			"visor",
@@ -292,6 +293,17 @@ func (d *Device) ensureSwitchProfiles() bool {
 		return false
 	}
 
+	// Migrate legacy default to non-flashing cluster switch profiles.
+	if len(d.DeviceProfile.SwitchProfiles) == 2 {
+		a := d.DeviceProfile.SwitchProfiles[0]
+		b := d.DeviceProfile.SwitchProfiles[1]
+		if (a == "rainbow" && b == "static") || (a == "static" && b == "rainbow") {
+			if d.GetRgbProfile("static") != nil && d.GetRgbProfile("off") != nil {
+				d.DeviceProfile.SwitchProfiles = []string{"static", "off"}
+			}
+		}
+	}
+
 	profiles := make([]string, 0, len(d.DeviceProfile.SwitchProfiles))
 	seen := make(map[string]struct{})
 	for _, profileName := range d.DeviceProfile.SwitchProfiles {
@@ -306,14 +318,8 @@ func (d *Device) ensureSwitchProfiles() bool {
 	}
 
 	if len(profiles) < 2 {
-		if d.GetRgbProfile(d.DeviceProfile.RGBProfile) != nil {
-			if _, ok := seen[d.DeviceProfile.RGBProfile]; !ok {
-				profiles = append(profiles, d.DeviceProfile.RGBProfile)
-				seen[d.DeviceProfile.RGBProfile] = struct{}{}
-			}
-		}
-
-		fallback := []string{"rainbow", "static", "off"}
+		// Prefer non-animated profiles to avoid visible flashing during profile switch.
+		fallback := []string{"static", "off", "rainbow"}
 		for _, profileName := range fallback {
 			if len(profiles) >= 2 {
 				break
@@ -326,6 +332,13 @@ func (d *Device) ensureSwitchProfiles() bool {
 			}
 			profiles = append(profiles, profileName)
 			seen[profileName] = struct{}{}
+		}
+
+		if len(profiles) < 2 && d.GetRgbProfile(d.DeviceProfile.RGBProfile) != nil {
+			if _, ok := seen[d.DeviceProfile.RGBProfile]; !ok {
+				profiles = append(profiles, d.DeviceProfile.RGBProfile)
+				seen[d.DeviceProfile.RGBProfile] = struct{}{}
+			}
 		}
 	}
 
