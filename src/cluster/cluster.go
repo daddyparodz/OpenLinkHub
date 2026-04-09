@@ -430,6 +430,12 @@ func (d *Device) ChangeDeviceBrightnessValue(value uint8) uint8 {
 
 	d.DeviceProfile.BrightnessSlider = &value
 	d.saveDeviceProfile()
+
+	if d.activeRgb != nil {
+		d.activeRgb.Exit <- true
+		d.activeRgb = nil
+	}
+	d.setDeviceColor()
 	return 1
 }
 

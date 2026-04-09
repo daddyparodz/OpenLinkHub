@@ -95,6 +95,13 @@ $(document).ready(function () {
         appendSwitchProfile(value);
     });
 
+    // Backward-compatible fallback for old profiles with empty switch list.
+    if (getSwitchProfilesInOrder().length === 0) {
+        const selected = ($('#clusterRgbProfile').val() || '').split(';');
+        const currentProfile = selected.length === 2 ? selected[1] : '';
+        [currentProfile, 'static', 'off'].forEach(appendSwitchProfile);
+    }
+
     $('#addClusterSwitchProfile').on('click', function () {
         const profileName = ($('#clusterSwitchAddProfile').val() || '').trim();
         if (profileName.length < 1) {
@@ -128,6 +135,44 @@ $(document).ready(function () {
                 $(this).insertAfter(next);
             }
         });
+        return false;
+    });
+
+    // Selecting a switch-profile item applies that RGB profile immediately.
+    $('#clusterSwitchProfiles').on('change', function () {
+        const selected = $('#clusterSwitchProfiles option:selected').first().val();
+        if (!selected || selected.length < 1) {
+            return false;
+        }
+
+        const deviceId = $("#deviceId").val();
+        const payload = {
+            deviceId: deviceId,
+            channelId: 0,
+            profile: selected
+        };
+
+        $.ajax({
+            url: '/api/color',
+            type: 'POST',
+            data: JSON.stringify(payload, null, 2),
+            cache: false,
+            success: function(response) {
+                try {
+                    if (response.status === 1) {
+                        const rgbOption = '0;' + selected;
+                        if ($('#clusterRgbProfile option[value="' + rgbOption + '"]').length > 0) {
+                            $('#clusterRgbProfile').val(rgbOption);
+                        }
+                    } else {
+                        toast.warning(response.message);
+                    }
+                } catch (err) {
+                    toast.warning(response.message);
+                }
+            }
+        });
+
         return false;
     });
 

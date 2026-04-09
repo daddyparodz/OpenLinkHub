@@ -1370,6 +1370,171 @@ transition: stroke-dashoffset 0.6s ease;
     text-align: right;
 }
 
+.cluster-control-col {
+    display: flex;
+}
+
+.cluster-control-card {
+    width: 100%;
+    min-width: 390px;
+}
+
+.cluster-layout {
+    align-items: flex-start;
+}
+
+.cluster-switch-row {
+    display: block;
+    padding: 12px;
+}
+
+.cluster-switch-label {
+    display: block;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+}
+
+.cluster-switch-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    padding: 14px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(29, 31, 36, 0.78), rgba(18, 20, 24, 0.78));
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.015);
+}
+
+.cluster-switch-help {
+    margin: 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.cluster-switch-list-label {
+    width: 100%;
+    margin: 0;
+}
+
+.cluster-switch-list {
+    width: 100%;
+    min-width: 0 !important;
+    min-height: 126px;
+    max-height: 180px;
+    padding: 8px;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 10px;
+    background: rgba(9, 10, 13, 0.95);
+    color: var(--text-main);
+    font-size: 0.95rem;
+}
+
+.cluster-switch-list option {
+    padding: 6px 8px;
+    border-radius: 6px;
+}
+
+.cluster-switch-list option:checked {
+    background: rgba(31, 111, 245, 0.55) !important;
+    color: #ffffff;
+}
+
+.cluster-switch-add-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 96px;
+    gap: 8px;
+    align-items: center;
+}
+
+.cluster-switch-add-label {
+    margin: 0;
+}
+
+.cluster-switch-add-select {
+    width: 100%;
+    min-width: 0 !important;
+}
+
+.cluster-switch-manage-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 70px 70px;
+    gap: 8px;
+    align-items: center;
+}
+
+.cluster-switch-btn {
+    min-height: 38px;
+    color: #dfe8f5 !important;
+    font-weight: 500;
+    background: linear-gradient(180deg, #3b414d, #2d323c);
+    border-color: rgba(135, 154, 184, 0.22);
+}
+
+.cluster-switch-btn:hover {
+    background: linear-gradient(180deg, #495263, #353c48);
+    border-color: rgba(166, 188, 222, 0.34);
+}
+
+.cluster-switch-remove {
+    min-width: 0;
+}
+
+.cluster-switch-save {
+    width: 100%;
+    min-height: 40px;
+    margin-top: 4px;
+    color: #e8f2ff !important;
+    background: linear-gradient(180deg, #1f6ff5, #1559c9);
+    border-color: rgba(80, 149, 255, 0.5);
+    font-weight: 600;
+}
+
+.cluster-switch-save:hover {
+    background: linear-gradient(180deg, #2b7dff, #1b64da);
+    border-color: rgba(122, 176, 255, 0.6);
+}
+
+@media (max-width: 1535.98px) {
+    .cluster-control-card {
+        min-width: 370px;
+    }
+}
+
+@media (max-width: 1399.98px) {
+    .cluster-layout > .col-xl-5,
+    .cluster-layout > .col-xl-7 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .cluster-control-card {
+        min-width: 0;
+    }
+}
+
+@media (max-width: 1199.98px) {
+    .cluster-control-col {
+        display: block;
+    }
+
+    .cluster-control-card {
+        min-width: 0;
+    }
+
+    .cluster-switch-manage-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .cluster-switch-remove {
+        grid-column: 1 / -1;
+    }
+}
+
 
 /* Base system button wrapper */
 .system-button {

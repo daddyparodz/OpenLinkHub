@@ -22,9 +22,9 @@
             {{ end }}
 
             <!-- Cluster -->
-            <div class="row g-4 mb-4 align-items-start">
-                <div class="col-md-2">
-                    <div class="card system-card text-center">
+            <div class="row g-4 mb-4 align-items-start cluster-layout">
+                <div class="col-12 col-xl-5 col-xxl-4 cluster-control-col">
+                    <div class="card system-card text-start cluster-control-card">
                         <div class="card-header">
                             {{ .Device.Product }}
                         </div>
@@ -41,9 +41,9 @@
                                     </div>
                                 </div>
 
-                                <!-- RGB Profile -->
+                                <!-- Active RGB Profile -->
                                 <div class="settings-row">
-                                    <span class="settings-label text-ellipsis">{{ .Lang "txtRgb" }}</span>
+                                    <span class="settings-label text-ellipsis">Active {{ .Lang "txtRgb" }}</span>
                                     <label for="clusterRgbProfile">
                                         <select id="clusterRgbProfile" class="form-select system-select compact auto-width clusterRgbProfile" name="clusterRgbProfile">
                                             {{ range $key, $mode := $rgbModes }}
@@ -58,39 +58,42 @@
                                 </div>
 
                                 <!-- Profile key switch list -->
-                                <div class="settings-row">
-                                    <span class="settings-label" style="white-space:normal;">Profile Button List</span>
-                                    <div style="display:flex; flex-direction:column; gap:8px; width:100%;">
-                                        <label for="clusterSwitchProfiles">
-                                            <select id="clusterSwitchProfiles" class="form-select system-select compact" name="clusterSwitchProfiles" multiple size="7" style="min-width:300px; width:100%;">
+                                <div class="settings-row cluster-switch-row">
+                                    <span class="settings-label cluster-switch-label">Switch Profiles</span>
+                                    <div class="cluster-switch-panel">
+                                        <p class="cluster-switch-help">Profile button cycles through list order.</p>
+                                        <label for="clusterSwitchProfiles" class="cluster-switch-list-label">
+                                            <select id="clusterSwitchProfiles" class="form-select system-select compact cluster-switch-list" name="clusterSwitchProfiles" multiple size="6">
                                             </select>
                                         </label>
-                                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                                            <label for="clusterSwitchAddProfile" style="margin:0;">
-                                                <select id="clusterSwitchAddProfile" class="form-select system-select compact auto-width" name="clusterSwitchAddProfile">
+                                        <div class="cluster-switch-add-row">
+                                            <label for="clusterSwitchAddProfile" class="cluster-switch-add-label">
+                                                <select id="clusterSwitchAddProfile" class="form-select system-select cluster-switch-add-select" name="clusterSwitchAddProfile">
                                                     {{ range $key, $mode := $rgbModes }}
                                                     <option value="{{ $mode }}">{{ $mode }}</option>
                                                     {{ end }}
                                                 </select>
                                             </label>
-                                            <button id="addClusterSwitchProfile" type="button" class="btn btn-secondary btn-sm">Add</button>
-                                            <button id="removeClusterSwitchProfile" type="button" class="btn btn-secondary btn-sm">Remove Selected</button>
-                                            <button id="moveUpClusterSwitchProfile" type="button" class="btn btn-secondary btn-sm">Up</button>
-                                            <button id="moveDownClusterSwitchProfile" type="button" class="btn btn-secondary btn-sm">Down</button>
+                                            <button id="addClusterSwitchProfile" type="button" class="system-button cluster-switch-btn">Add</button>
                                         </div>
-                                        <div style="display:none;">
+                                        <div class="cluster-switch-manage-row">
+                                            <button id="removeClusterSwitchProfile" type="button" class="system-button cluster-switch-btn cluster-switch-remove">Remove Selected</button>
+                                            <button id="moveUpClusterSwitchProfile" type="button" class="system-button cluster-switch-btn">Up</button>
+                                            <button id="moveDownClusterSwitchProfile" type="button" class="system-button cluster-switch-btn">Down</button>
+                                        </div>
+                                        <div class="d-none">
                                             {{ range $key, $mode := $device.DeviceProfile.SwitchProfiles }}
                                             <input type="hidden" class="clusterSwitchProfileCurrent" value="{{ $mode }}">
                                             {{ end }}
                                         </div>
-                                        <button id="saveClusterSwitchProfiles" type="button" class="btn btn-primary btn-sm">Save Switch Profiles</button>
+                                        <button id="saveClusterSwitchProfiles" type="button" class="system-button cluster-switch-save">Save Switch Profiles</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-10">
+                <div class="col-12 col-xl-7 col-xxl-8">
                     <div class="card system-card text-center">
                         <div class="card-body">
                             <table class="dataTable text-sm" id="table" style="width: 100%;">
