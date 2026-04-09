@@ -56,6 +56,7 @@ type Payload struct {
 	Workers                       int                   `json:"workers"`
 	FrameDelay                    int                   `json:"frameDelay"`
 	Profile                       string                `json:"profile"`
+	Profiles                      []string              `json:"profiles"`
 	OperatingMode                 int                   `json:"operatingMode"`
 	Label                         string                `json:"label"`
 	Static                        bool                  `json:"static"`
@@ -4547,6 +4548,56 @@ func ProcessSetRgbCluster(r *http.Request) *Payload {
 	}
 
 	return &Payload{Message: language.GetValue("txtRgbClusterError"), Code: http.StatusOK, Status: 0}
+}
+
+// ProcessSetClusterSwitchProfiles will update switchable cluster RGB profiles.
+func ProcessSetClusterSwitchProfiles(r *http.Request) *Payload {
+	req := &Payload{}
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		logger.Log(map[string]interface{}{"error": err}).Error("Unable to decode JSON")
+		return &Payload{
+			Message: language.GetValue("txtUnableToValidateRequest"),
+			Code:    http.StatusOK,
+			Status:  0,
+		}
+	}
+
+	if len(req.DeviceId) == 0 {
+		return &Payload{Message: language.GetValue("txtNonExistingDevice"), Code: http.StatusOK, Status: 0}
+	}
+
+	if m, _ := regexp.MatchString("^[a-zA-Z0-9]+$", req.DeviceId); !m {
+		return &Payload{Message: language.GetValue("txtNonExistingDevice"), Code: http.StatusOK, Status: 0}
+	}
+
+	if devices.GetDevice(req.DeviceId) == nil {
+		return &Payload{Message: language.GetValue("txtNonExistingDevice"), Code: http.StatusOK, Status: 0}
+	}
+
+	if len(req.Profiles) < 2 {
+		return &Payload{Message: language.GetValue("txtInvalidProfileSelected"), Code: http.StatusOK, Status: 0}
+	}
+
+	for _, profileName := range req.Profiles {
+		if m, _ := regexp.MatchString("^[a-zA-Z0-9-]+$", profileName); !m {
+			return &Payload{Message: language.GetValue("txtInvalidProfileSelected"), Code: http.StatusOK, Status: 0}
+		}
+	}
+
+	results := devices.CallDeviceMethod(
+		req.DeviceId,
+		"UpdateSwitchProfiles",
+		req.Profiles,
+	)
+
+	if len(results) > 0 {
+		if results[0].Uint() == 1 {
+			return &Payload{Message: language.GetValue("txtRgbProfileUpdated"), Code: http.StatusOK, Status: 1}
+		}
+	}
+
+	return &Payload{Message: language.GetValue("txtUnableToChangeRgbProfile"), Code: http.StatusOK, Status: 0}
 }
 
 // ProcessSetKeyboardLiveSync will process setting data for keyboard live RGB sync

@@ -382,6 +382,46 @@ func (d *Device) RotateSwitchProfile() uint8 {
 	return 1
 }
 
+// UpdateSwitchProfiles stores cluster profile-rotation order for the profile key.
+func (d *Device) UpdateSwitchProfiles(profiles []string) uint8 {
+	if d.DeviceProfile == nil {
+		return 0
+	}
+
+	clean := make([]string, 0, len(profiles))
+	seen := make(map[string]struct{})
+	for _, profileName := range profiles {
+		if len(profileName) < 1 {
+			continue
+		}
+		if _, ok := seen[profileName]; ok {
+			continue
+		}
+		if d.GetRgbProfile(profileName) == nil {
+			continue
+		}
+		seen[profileName] = struct{}{}
+		clean = append(clean, profileName)
+	}
+
+	if len(clean) < 2 {
+		return 0
+	}
+
+	d.DeviceProfile.SwitchProfiles = clean
+	if common.IndexOfString(clean, d.DeviceProfile.RGBProfile) < 0 {
+		d.DeviceProfile.RGBProfile = clean[0]
+	}
+
+	d.saveDeviceProfile()
+	if d.activeRgb != nil {
+		d.activeRgb.Exit <- true
+		d.activeRgb = nil
+	}
+	d.setDeviceColor()
+	return 1
+}
+
 // ChangeDeviceBrightnessValue will change device brightness via slider
 func (d *Device) ChangeDeviceBrightnessValue(value uint8) uint8 {
 	if value < 0 || value > 100 {

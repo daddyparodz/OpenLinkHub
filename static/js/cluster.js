@@ -65,6 +65,55 @@ $(document).ready(function () {
         });
     });
 
+    // Initialize switch-profile list from server-provided values.
+    const currentSwitchProfiles = [];
+    $('.clusterSwitchProfileCurrent').each(function () {
+        const value = ($(this).val() || '').trim();
+        if (value.length > 0) {
+            currentSwitchProfiles.push(value);
+        }
+    });
+    if (currentSwitchProfiles.length > 0) {
+        $('#clusterSwitchProfiles option').each(function () {
+            const optionValue = ($(this).val() || '').trim();
+            $(this).prop('selected', currentSwitchProfiles.includes(optionValue));
+        });
+    }
+
+    $('#saveClusterSwitchProfiles').on('click', function () {
+        const deviceId = $("#deviceId").val();
+        const profiles = $('#clusterSwitchProfiles').val() || [];
+
+        if (profiles.length < 2) {
+            toast.warning(i18n.t('txtInvalidProfileSelected', 'Select at least 2 profiles'));
+            return false;
+        }
+
+        const pf = {
+            deviceId: deviceId,
+            profiles: profiles
+        };
+
+        $.ajax({
+            url: '/api/cluster/switchProfiles',
+            type: 'POST',
+            data: JSON.stringify(pf, null, 2),
+            cache: false,
+            success: function(response) {
+                try {
+                    if (response.status === 1) {
+                        toast.success(response.message);
+                        location.reload();
+                    } else {
+                        toast.warning(response.message);
+                    }
+                } catch (err) {
+                    toast.warning(response.message);
+                }
+            }
+        });
+    });
+
     $('#brightnessSlider').on('change', function () {
         const deviceId = $("#deviceId").val();
         const brightness = $(this).val();
