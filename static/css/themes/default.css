@@ -1414,13 +1414,12 @@ transition: stroke-dashoffset 0.6s ease;
 .cluster-switch-list {
     width: 100%;
     min-width: 0 !important;
-    min-height: 126px;
-    max-height: 180px;
+    min-height: 0;
     padding: 8px;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    overflow-y: auto;
+    overflow: visible;
     border: 1px solid var(--border-subtle);
     border-radius: 10px;
     background: var(--bg-card);
