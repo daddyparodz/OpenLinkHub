@@ -1,5 +1,7 @@
 "use strict";
 $(document).ready(function () {
+    const $clusterRgbProfile = $('#clusterRgbProfile');
+    const $clusterRgbCells = $('.cluster-rgb-cell');
     window.i18n = {
         locale: null,
         values: {},
@@ -31,6 +33,40 @@ $(document).ready(function () {
         }
     });
 
+    function syncClusterRgbDisplay(profileName) {
+        if (!profileName || profileName.length < 1) {
+            return;
+        }
+
+        const rgbOption = '0;' + profileName;
+        if ($clusterRgbProfile.find('option[value="' + rgbOption + '"]').length > 0) {
+            $clusterRgbProfile.val(rgbOption);
+        }
+
+        $clusterRgbCells.text(profileName);
+    }
+
+    function syncClusterStateFromApi() {
+        $.ajax({
+            url: '/api/devices/cluster',
+            method: 'GET',
+            cache: false,
+            success: function (response) {
+                try {
+                    const profileName = response.device.DeviceProfile.RGBProfile;
+                    if (profileName && profileName.length > 0) {
+                        syncClusterRgbDisplay(profileName);
+                    }
+                } catch (err) {
+                    console.error('Failed to sync cluster state');
+                }
+            },
+            error: function () {
+                console.error('Failed to fetch cluster state');
+            }
+        });
+    }
+
     $('.clusterRgbProfile').on('change', function () {
         const deviceId = $("#deviceId").val();
         const profile = $(this).val().split(";");
@@ -54,7 +90,7 @@ $(document).ready(function () {
             success: function(response) {
                 try {
                     if (response.status === 1) {
-                        location.reload();
+                        syncClusterRgbDisplay(profile[1]);
                     } else {
                         toast.warning(response.message);
                     }
@@ -188,10 +224,7 @@ $(document).ready(function () {
             success: function(response) {
                 try {
                     if (response.status === 1) {
-                        const rgbOption = '0;' + profileName;
-                        if ($('#clusterRgbProfile option[value="' + rgbOption + '"]').length > 0) {
-                            $('#clusterRgbProfile').val(rgbOption);
-                        }
+                        syncClusterRgbDisplay(profileName);
                     } else {
                         toast.warning(response.message);
                     }
@@ -421,4 +454,7 @@ $(document).ready(function () {
         $brightnessSlider.on("input", updateSlider);
         updateSlider();
     }
+
+    syncClusterStateFromApi();
+    setInterval(syncClusterStateFromApi, 1500);
 });
