@@ -65,24 +65,75 @@ $(document).ready(function () {
         });
     });
 
+    function getSwitchProfilesInOrder() {
+        const values = [];
+        $('#clusterSwitchProfiles option').each(function () {
+            const value = ($(this).val() || '').trim();
+            if (value.length > 0) {
+                values.push(value);
+            }
+        });
+        return values;
+    }
+
+    function appendSwitchProfile(profileName) {
+        if (!profileName || profileName.length < 1) {
+            return;
+        }
+        const existing = getSwitchProfilesInOrder();
+        if (existing.includes(profileName)) {
+            return;
+        }
+        $('#clusterSwitchProfiles').append(
+            $('<option>', { value: profileName, text: profileName })
+        );
+    }
+
     // Initialize switch-profile list from server-provided values.
-    const currentSwitchProfiles = [];
     $('.clusterSwitchProfileCurrent').each(function () {
         const value = ($(this).val() || '').trim();
-        if (value.length > 0) {
-            currentSwitchProfiles.push(value);
-        }
+        appendSwitchProfile(value);
     });
-    if (currentSwitchProfiles.length > 0) {
-        $('#clusterSwitchProfiles option').each(function () {
-            const optionValue = ($(this).val() || '').trim();
-            $(this).prop('selected', currentSwitchProfiles.includes(optionValue));
+
+    $('#addClusterSwitchProfile').on('click', function () {
+        const profileName = ($('#clusterSwitchAddProfile').val() || '').trim();
+        if (profileName.length < 1) {
+            return false;
+        }
+        appendSwitchProfile(profileName);
+        return false;
+    });
+
+    $('#removeClusterSwitchProfile').on('click', function () {
+        $('#clusterSwitchProfiles option:selected').remove();
+        return false;
+    });
+
+    $('#moveUpClusterSwitchProfile').on('click', function () {
+        const selected = $('#clusterSwitchProfiles option:selected');
+        selected.each(function () {
+            const prev = $(this).prev();
+            if (prev.length > 0) {
+                $(this).insertBefore(prev);
+            }
         });
-    }
+        return false;
+    });
+
+    $('#moveDownClusterSwitchProfile').on('click', function () {
+        const selected = $($('#clusterSwitchProfiles option:selected').get().reverse());
+        selected.each(function () {
+            const next = $(this).next();
+            if (next.length > 0) {
+                $(this).insertAfter(next);
+            }
+        });
+        return false;
+    });
 
     $('#saveClusterSwitchProfiles').on('click', function () {
         const deviceId = $("#deviceId").val();
-        const profiles = $('#clusterSwitchProfiles').val() || [];
+        const profiles = getSwitchProfilesInOrder();
 
         if (profiles.length < 2) {
             toast.warning(i18n.t('txtInvalidProfileSelected', 'Select at least 2 profiles'));

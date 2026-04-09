@@ -59,15 +59,25 @@
 
                                 <!-- Profile key switch list -->
                                 <div class="settings-row">
-                                    <span class="settings-label text-ellipsis">Switch Profiles</span>
+                                    <span class="settings-label" style="white-space:normal;">Profile Button List</span>
                                     <div style="display:flex; flex-direction:column; gap:8px; width:100%;">
                                         <label for="clusterSwitchProfiles">
-                                            <select id="clusterSwitchProfiles" class="form-select system-select compact" name="clusterSwitchProfiles" multiple size="6" style="min-width:220px;">
-                                                {{ range $key, $mode := $rgbModes }}
-                                                <option value="{{ $mode }}">{{ $mode }}</option>
-                                                {{ end }}
+                                            <select id="clusterSwitchProfiles" class="form-select system-select compact" name="clusterSwitchProfiles" multiple size="7" style="min-width:300px; width:100%;">
                                             </select>
                                         </label>
+                                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                                            <label for="clusterSwitchAddProfile" style="margin:0;">
+                                                <select id="clusterSwitchAddProfile" class="form-select system-select compact auto-width" name="clusterSwitchAddProfile">
+                                                    {{ range $key, $mode := $rgbModes }}
+                                                    <option value="{{ $mode }}">{{ $mode }}</option>
+                                                    {{ end }}
+                                                </select>
+                                            </label>
+                                            <button id="addClusterSwitchProfile" type="button" class="btn btn-secondary btn-sm">Add</button>
+                                            <button id="removeClusterSwitchProfile" type="button" class="btn btn-secondary btn-sm">Remove Selected</button>
+                                            <button id="moveUpClusterSwitchProfile" type="button" class="btn btn-secondary btn-sm">Up</button>
+                                            <button id="moveDownClusterSwitchProfile" type="button" class="btn btn-secondary btn-sm">Down</button>
+                                        </div>
                                         <div style="display:none;">
                                             {{ range $key, $mode := $device.DeviceProfile.SwitchProfiles }}
                                             <input type="hidden" class="clusterSwitchProfileCurrent" value="{{ $mode }}">
