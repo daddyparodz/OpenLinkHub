@@ -1,6 +1,5 @@
 [Unit]
 Description=Open source interface for iCUE LINK System Hub, Corsair AIOs and Hubs
-After=sleep.target
 StartLimitIntervalSec=60
 StartLimitBurst=5
 
