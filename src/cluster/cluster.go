@@ -293,6 +293,7 @@ func (d *Device) ensureSwitchProfiles() bool {
 	if d.DeviceProfile == nil {
 		return false
 	}
+	original := append([]string(nil), d.DeviceProfile.SwitchProfiles...)
 	if len(d.DeviceProfile.SwitchProfiles) == 2 {
 		a := d.DeviceProfile.SwitchProfiles[0]
 		b := d.DeviceProfile.SwitchProfiles[1]
@@ -340,7 +341,7 @@ func (d *Device) ensureSwitchProfiles() bool {
 		return false
 	}
 
-	changed := !slices.Equal(d.DeviceProfile.SwitchProfiles, profiles)
+	changed := !slices.Equal(original, profiles)
 	d.DeviceProfile.SwitchProfiles = profiles
 	return changed
 }

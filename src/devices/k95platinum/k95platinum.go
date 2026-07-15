@@ -117,6 +117,7 @@ type Device struct {
 	stopRepeatMutex    sync.Mutex
 	ledDataMutex       sync.RWMutex
 	dispatch           dispatcher.DeviceDispatcher
+	profileSwitchHook  func()
 }
 
 var (
@@ -2118,6 +2119,20 @@ func (d *Device) getListenerData() []byte {
 	return data
 }
 
+func (d *Device) processListenerData(data []byte) {
+	if len(data) > 0 && data[0] == 0x03 {
+		d.triggerKeyAssignment(data)
+	}
+}
+
+func (d *Device) handleProfileSwitch() {
+	if d.profileSwitchHook != nil {
+		d.profileSwitchHook()
+		return
+	}
+	d.rotateDeviceProfile()
+}
+
 // controlButtonListener will listen for events from the control buttons
 func (d *Device) backendListener() {
 	go func() {
@@ -2155,9 +2170,7 @@ func (d *Device) backendListener() {
 					continue
 				}
 
-				if data[0] == 0x03 {
-					d.triggerKeyAssignment(data)
-				}
+				d.processListenerData(data)
 				time.Sleep(5 * time.Millisecond)
 			}
 		}
@@ -2327,7 +2340,7 @@ func (d *Device) triggerKeyAssignment(value []byte) {
 			// Profile switch
 			if key.ProfileSwitch {
 				if keyPressed {
-					d.rotateDeviceProfile()
+					d.handleProfileSwitch()
 				}
 				continue
 			}
