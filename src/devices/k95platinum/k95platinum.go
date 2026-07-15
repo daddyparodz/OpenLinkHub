@@ -118,6 +118,9 @@ type Device struct {
 	ledDataMutex       sync.RWMutex
 	dispatch           dispatcher.DeviceDispatcher
 	profileSwitchHook  func()
+	profileSwitchNow   func() time.Time
+	profileSwitchLatch bool
+	profileSwitchUpAt  time.Time
 }
 
 var (
@@ -141,6 +144,7 @@ var (
 	keyboardKey           = "k95platinum-default"
 	defaultLayout         = "k95platinum-default-US"
 	maximumPacketSize     = 60
+	profileSwitchDebounce = 100 * time.Millisecond
 	rgbProfileUpgrade     = []string{"gradient", "pastelrainbow", "pastelspiralrainbow"}
 	rgbModes              = []string{
 		"circle",
@@ -2133,6 +2137,55 @@ func (d *Device) handleProfileSwitch() {
 	d.rotateDeviceProfile()
 }
 
+// processProfileSwitch turns the noisy HID report stream into one logical
+// profile switch per physical press. Some K95 firmware briefly clears the
+// profile bit while the key is still held, so a release must remain stable
+// before the latch can be armed again.
+func (d *Device) processProfileSwitch(current *big.Int) {
+	if d.DeviceProfile == nil {
+		return
+	}
+
+	pressed := false
+	for i := 0; i < current.BitLen(); i++ {
+		if current.Bit(i) == 0 {
+			continue
+		}
+		keyHash := new(big.Int).Lsh(big.NewInt(1), uint(i)).String()
+		key := d.getKeyData(keyHash)
+		if key != nil && key.ProfileSwitch {
+			pressed = true
+			break
+		}
+	}
+
+	now := time.Now()
+	if d.profileSwitchNow != nil {
+		now = d.profileSwitchNow()
+	}
+
+	if !pressed {
+		if d.profileSwitchLatch && d.profileSwitchUpAt.IsZero() {
+			d.profileSwitchUpAt = now
+		}
+		return
+	}
+
+	if d.profileSwitchLatch {
+		if d.profileSwitchUpAt.IsZero() {
+			return
+		}
+		if now.Sub(d.profileSwitchUpAt) < profileSwitchDebounce {
+			d.profileSwitchUpAt = time.Time{}
+			return
+		}
+	}
+
+	d.profileSwitchLatch = true
+	d.profileSwitchUpAt = time.Time{}
+	d.handleProfileSwitch()
+}
+
 // controlButtonListener will listen for events from the control buttons
 func (d *Device) backendListener() {
 	go func() {
@@ -2265,6 +2318,7 @@ func (d *Device) triggerKeyAssignment(value []byte) {
 		previous = new(big.Int).Set(d.ModifierIndex)
 	}
 	current := new(big.Int).Set(val)
+	d.processProfileSwitch(current)
 	pressed := new(big.Int).AndNot(new(big.Int).Set(current), previous)
 	released := new(big.Int).AndNot(new(big.Int).Set(previous), current)
 	changed := previous.Cmp(current) != 0
@@ -2339,9 +2393,6 @@ func (d *Device) triggerKeyAssignment(value []byte) {
 
 			// Profile switch
 			if key.ProfileSwitch {
-				if keyPressed {
-					d.handleProfileSwitch()
-				}
 				continue
 			}
 
