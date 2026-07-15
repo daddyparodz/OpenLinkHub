@@ -22,13 +22,14 @@ var (
 	pwd                   = ""
 	d                     *Device
 	deviceRefreshInterval = 1000
-	rgbProfileUpgrade     = []string{"gradient", "pastelrainbow", "pastelspiralrainbow", "rain"}
+	rgbProfileUpgrade     = []string{"off", "gradient", "pastelrainbow", "pastelspiralrainbow", "rain"}
 )
 
 type DeviceProfile struct {
 	RGBProfile         string
 	BrightnessSlider   *uint8
 	OriginalBrightness uint8
+	SwitchProfiles     []string
 }
 
 type Device struct {
@@ -65,6 +66,7 @@ func Init() *Device {
 			"gradient",
 			"marquee",
 			"nebula",
+			"off",
 			"rain",
 			"rainbow",
 			"pastelrainbow",
@@ -284,6 +286,89 @@ func (d *Device) UpdateRgbProfile(_ int, profile string) uint8 {
 		d.activeRgb = nil
 	}
 	d.setDeviceColor() // Restart RGB
+	return 1
+}
+
+func (d *Device) ensureSwitchProfiles() bool {
+	if d.DeviceProfile == nil {
+		return false
+	}
+	if len(d.DeviceProfile.SwitchProfiles) == 2 {
+		a := d.DeviceProfile.SwitchProfiles[0]
+		b := d.DeviceProfile.SwitchProfiles[1]
+		if (a == "rainbow" && b == "static") || (a == "static" && b == "rainbow") {
+			if d.GetRgbProfile("static") != nil && d.GetRgbProfile("off") != nil {
+				d.DeviceProfile.SwitchProfiles = []string{"static", "off"}
+			}
+		}
+	}
+
+	profiles := make([]string, 0, len(d.DeviceProfile.SwitchProfiles))
+	seen := make(map[string]struct{})
+	for _, profileName := range d.DeviceProfile.SwitchProfiles {
+		if _, ok := seen[profileName]; ok {
+			continue
+		}
+		if d.GetRgbProfile(profileName) == nil {
+			continue
+		}
+		seen[profileName] = struct{}{}
+		profiles = append(profiles, profileName)
+	}
+
+	for _, profileName := range []string{"static", "off", "rainbow"} {
+		if len(profiles) >= 2 {
+			break
+		}
+		if d.GetRgbProfile(profileName) == nil {
+			continue
+		}
+		if _, ok := seen[profileName]; ok {
+			continue
+		}
+		profiles = append(profiles, profileName)
+		seen[profileName] = struct{}{}
+	}
+
+	if len(profiles) < 2 && d.GetRgbProfile(d.DeviceProfile.RGBProfile) != nil {
+		if _, ok := seen[d.DeviceProfile.RGBProfile]; !ok {
+			profiles = append(profiles, d.DeviceProfile.RGBProfile)
+		}
+	}
+
+	if len(profiles) < 2 {
+		return false
+	}
+
+	changed := !slices.Equal(d.DeviceProfile.SwitchProfiles, profiles)
+	d.DeviceProfile.SwitchProfiles = profiles
+	return changed
+}
+
+// RotateSwitchProfile rotates between persisted cluster RGB profiles.
+func (d *Device) RotateSwitchProfile() uint8 {
+	if d.DeviceProfile == nil {
+		return 0
+	}
+
+	changed := d.ensureSwitchProfiles()
+	if len(d.DeviceProfile.SwitchProfiles) < 2 {
+		return 0
+	}
+
+	currentIndex := common.IndexOfString(d.DeviceProfile.SwitchProfiles, d.DeviceProfile.RGBProfile)
+	if currentIndex < 0 {
+		currentIndex = 0
+	}
+
+	nextIndex := (currentIndex + 1) % len(d.DeviceProfile.SwitchProfiles)
+	if d.UpdateRgbProfile(0, d.DeviceProfile.SwitchProfiles[nextIndex]) != 1 {
+		return 0
+	}
+
+	if changed {
+		d.saveDeviceProfile()
+	}
 	return 1
 }
 
@@ -663,6 +748,12 @@ func (d *Device) saveDeviceProfile() {
 		}
 		deviceProfile.RGBProfile = d.DeviceProfile.RGBProfile
 		deviceProfile.OriginalBrightness = d.DeviceProfile.OriginalBrightness
+		deviceProfile.SwitchProfiles = d.DeviceProfile.SwitchProfiles
+	}
+
+	if d.DeviceProfile != nil {
+		d.ensureSwitchProfiles()
+		deviceProfile.SwitchProfiles = d.DeviceProfile.SwitchProfiles
 	}
 
 	if err := common.SaveJsonData(profilePath, deviceProfile); err != nil {
@@ -699,6 +790,9 @@ func (d *Device) loadDeviceProfile() {
 	}
 
 	d.DeviceProfile = pf
+	if d.ensureSwitchProfiles() {
+		d.saveDeviceProfile()
+	}
 }
 
 // setCpuTemperature will store current CPU temperature

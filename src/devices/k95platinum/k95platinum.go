@@ -1192,8 +1192,23 @@ func (d *Device) ChangeDeviceProfile(profileName string) uint8 {
 	return 0
 }
 
+// rotateClusterProfile rotates persisted cluster RGB profiles.
+func (d *Device) rotateClusterProfile() {
+	clusterDevice := cluster.Get()
+	if clusterDevice == nil {
+		return
+	}
+
+	clusterDevice.RotateSwitchProfile()
+}
+
 // rotateDeviceProfile will rotate and activate next user profile
 func (d *Device) rotateDeviceProfile() {
+	if d.DeviceProfile != nil && d.DeviceProfile.RGBCluster {
+		d.rotateClusterProfile()
+		return
+	}
+
 	if d.DeviceProfile == nil || len(d.UserProfiles) == 0 {
 		return
 	}
