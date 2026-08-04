@@ -2,9 +2,9 @@
   "version": 2,
   "uppercaseClass": "key-uppercase",
   "fontSize": 14,
-  "key": "k60rgbpro-default",
-  "device": "K60 RGB PRO",
-  "layout": "US",
+  "key": "k60rgbprolp-default",
+  "device": "K60 RGB PRO LP",
+  "layout": "DE",
   "rows": 6,
   "modifierPosition": 15,
   "row": {
@@ -17,14 +17,20 @@
           "left": 0,
           "top": 0,
           "zone": 1,
-          "packetIndex": [37],
+          "packetIndex": [
+            37
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 0
           },
-          "keyData": [41],
-          "keyHash": ["2199023255552"],
+          "keyData": [
+            41
+          ],
+          "keyHash": [
+            "2199023255552"
+          ],
           "default": true
         },
         "2": {
@@ -33,15 +39,23 @@
           "height": 70,
           "left": 95,
           "top": 0,
-          "packetIndex": [54],
+          "packetIndex": [
+            54
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyEmpty": ["keyboard-key-empty"],
-          "keyData": [58],
-          "keyHash": ["288230376151711744"],
+          "keyEmpty": [
+            "keyboard-key-empty"
+          ],
+          "keyData": [
+            58
+          ],
+          "keyHash": [
+            "288230376151711744"
+          ],
           "default": true,
           "isLock": true
         },
@@ -51,14 +65,20 @@
           "height": 70,
           "left": 15,
           "top": 0,
-          "packetIndex": [55],
+          "packetIndex": [
+            55
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [59],
-          "keyHash": ["576460752303423488"],
+          "keyData": [
+            59
+          ],
+          "keyHash": [
+            "576460752303423488"
+          ],
           "default": true
         },
         "4": {
@@ -67,14 +87,20 @@
           "height": 70,
           "left": 15,
           "top": 0,
-          "packetIndex": [56],
+          "packetIndex": [
+            56
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [60],
-          "keyHash": ["1152921504606846976"],
+          "keyData": [
+            60
+          ],
+          "keyHash": [
+            "1152921504606846976"
+          ],
           "default": true,
           "actionType": 12
         },
@@ -84,14 +110,20 @@
           "height": 70,
           "left": 15,
           "top": 0,
-          "packetIndex": [57],
+          "packetIndex": [
+            57
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [61],
-          "keyHash": ["2305843009213693952"],
+          "keyData": [
+            61
+          ],
+          "keyHash": [
+            "2305843009213693952"
+          ],
           "default": true,
           "actionType": 11
         },
@@ -101,15 +133,23 @@
           "height": 70,
           "left": 55,
           "top": 0,
-          "packetIndex": [58],
+          "packetIndex": [
+            58
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyEmpty": ["keyboard-key-empty"],
-          "keyData": [62],
-          "keyHash": ["4611686018427387904"],
+          "keyEmpty": [
+            "keyboard-key-empty"
+          ],
+          "keyData": [
+            62
+          ],
+          "keyHash": [
+            "4611686018427387904"
+          ],
           "default": true,
           "mediaKey": true,
           "fnActionType": 1,
@@ -121,14 +161,20 @@
           "height": 70,
           "left": 15,
           "top": 0,
-          "packetIndex": [59],
+          "packetIndex": [
+            59
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [63],
-          "keyHash": ["9223372036854775808"],
+          "keyData": [
+            63
+          ],
+          "keyHash": [
+            "9223372036854775808"
+          ],
           "default": true
         },
         "8": {
@@ -137,14 +183,20 @@
           "height": 70,
           "left": 15,
           "top": 0,
-          "packetIndex": [60],
+          "packetIndex": [
+            60
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [64],
-          "keyHash": ["18446744073709551616"],
+          "keyData": [
+            64
+          ],
+          "keyHash": [
+            "18446744073709551616"
+          ],
           "default": true,
           "mediaKey": true,
           "fnActionType": 1,
@@ -156,14 +208,20 @@
           "height": 70,
           "left": 15,
           "top": 0,
-          "packetIndex": [61],
+          "packetIndex": [
+            61
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [65],
-          "keyHash": ["36893488147419103232"],
+          "keyData": [
+            65
+          ],
+          "keyHash": [
+            "36893488147419103232"
+          ],
           "default": true,
           "mediaKey": true,
           "fnActionType": 1,
@@ -175,15 +233,23 @@
           "height": 70,
           "left": 60,
           "top": 0,
-          "packetIndex": [62],
+          "packetIndex": [
+            62
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyEmpty": ["keyboard-key-empty"],
-          "keyData": [66],
-          "keyHash": ["73786976294838206464"],
+          "keyEmpty": [
+            "keyboard-key-empty"
+          ],
+          "keyData": [
+            66
+          ],
+          "keyHash": [
+            "73786976294838206464"
+          ],
           "default": true,
           "mediaKey": true,
           "fnActionType": 1,
@@ -195,14 +261,20 @@
           "height": 70,
           "left": 15,
           "top": 0,
-          "packetIndex": [63],
+          "packetIndex": [
+            63
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [67],
-          "keyHash": ["147573952589676412928"],
+          "keyData": [
+            67
+          ],
+          "keyHash": [
+            "147573952589676412928"
+          ],
           "default": true,
           "mediaKey": true,
           "fnActionType": 1,
@@ -214,14 +286,20 @@
           "height": 70,
           "left": 15,
           "top": 0,
-          "packetIndex": [64],
+          "packetIndex": [
+            64
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [68],
-          "keyHash": ["295147905179352825856"],
+          "keyData": [
+            68
+          ],
+          "keyHash": [
+            "295147905179352825856"
+          ],
           "default": true,
           "mediaKey": true,
           "fnActionType": 1,
@@ -233,87 +311,119 @@
           "height": 70,
           "left": 15,
           "top": 0,
-          "packetIndex": [65],
+          "packetIndex": [
+            65
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [69],
-          "keyHash": ["590295810358705651712"],
+          "keyData": [
+            69
+          ],
+          "keyHash": [
+            "590295810358705651712"
+          ],
           "default": true,
           "mediaKey": true,
           "fnActionType": 1,
           "fnActionCommand": 7
         },
         "14": {
-          "keyName": "PrtSc",
+          "keyName": "Dru",
           "width": 65,
           "height": 70,
           "left": 25,
           "top": 0,
-          "packetIndex": [66],
+          "packetIndex": [
+            66
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyEmpty": ["keyboard-key-empty"],
-          "keyData": [70],
-          "keyHash": ["1180591620717411303424"],
+          "keyEmpty": [
+            "keyboard-key-empty"
+          ],
+          "keyData": [
+            70
+          ],
+          "keyHash": [
+            "1180591620717411303424"
+          ],
           "default": true
         },
         "15": {
-          "keyName": "ScrLk",
+          "keyName": "Rol",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 0,
-          "packetIndex": [67],
+          "packetIndex": [
+            67
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [71],
-          "keyHash": ["2361183241434822606848"],
+          "keyData": [
+            71
+          ],
+          "keyHash": [
+            "2361183241434822606848"
+          ],
           "default": true
         },
         "16": {
-          "keyName": "Pause",
+          "keyName": "Pau",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 0,
-          "packetIndex": [68],
+          "packetIndex": [
+            68
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [72],
+          "keyData": [
+            72
+          ],
           "default": true,
-          "keyHash": ["4722366482869645213696"]
+          "keyHash": [
+            "4722366482869645213696"
+          ]
         }
       }
     },
     "1": {
       "keys": {
         "17": {
-          "keyName": "` ~",
+          "keyName": "^ °",
           "width": 65,
           "height": 70,
           "left": 0,
           "top": 15,
-          "packetIndex": [49],
+          "packetIndex": [
+            49
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [53],
+          "keyData": [
+            53
+          ],
           "default": true,
-          "keyHash": ["9007199254740992"]
+          "keyHash": [
+            "9007199254740992"
+          ]
         },
         "18": {
           "keyName": "1",
@@ -321,15 +431,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [26],
+          "packetIndex": [
+            26
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [30],
+          "keyData": [
+            30
+          ],
           "default": true,
-          "keyHash": ["1073741824"]
+          "keyHash": [
+            "1073741824"
+          ]
         },
         "19": {
           "keyName": "2",
@@ -337,15 +453,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [27],
+          "packetIndex": [
+            27
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [31],
+          "keyData": [
+            31
+          ],
           "default": true,
-          "keyHash": ["2147483648"]
+          "keyHash": [
+            "2147483648"
+          ]
         },
         "20": {
           "keyName": "3",
@@ -353,15 +475,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [28],
+          "packetIndex": [
+            28
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [32],
+          "keyData": [
+            32
+          ],
           "default": true,
-          "keyHash": ["4294967296"]
+          "keyHash": [
+            "4294967296"
+          ]
         },
         "21": {
           "keyName": "4",
@@ -369,15 +497,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [29],
+          "packetIndex": [
+            29
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [33],
+          "keyData": [
+            33
+          ],
           "default": true,
-          "keyHash": ["8589934592"]
+          "keyHash": [
+            "8589934592"
+          ]
         },
         "22": {
           "keyName": "5",
@@ -385,15 +519,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [30],
+          "packetIndex": [
+            30
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [34],
+          "keyData": [
+            34
+          ],
           "default": true,
-          "keyHash": ["17179869184"]
+          "keyHash": [
+            "17179869184"
+          ]
         },
         "23": {
           "keyName": "6",
@@ -401,15 +541,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [31],
+          "packetIndex": [
+            31
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [35],
+          "keyData": [
+            35
+          ],
           "default": true,
-          "keyHash": ["34359738368"]
+          "keyHash": [
+            "34359738368"
+          ]
         },
         "24": {
           "keyName": "7",
@@ -417,15 +563,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [32],
+          "packetIndex": [
+            32
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [36],
+          "keyData": [
+            36
+          ],
           "default": true,
-          "keyHash": ["68719476736"]
+          "keyHash": [
+            "68719476736"
+          ]
         },
         "25": {
           "keyName": "8",
@@ -433,15 +585,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [33],
+          "packetIndex": [
+            33
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [37],
+          "keyData": [
+            37
+          ],
           "default": true,
-          "keyHash": ["137438953472"]
+          "keyHash": [
+            "137438953472"
+          ]
         },
         "26": {
           "keyName": "9",
@@ -449,15 +607,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [34],
+          "packetIndex": [
+            34
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [38],
+          "keyData": [
+            38
+          ],
           "default": true,
-          "keyHash": ["274877906944"]
+          "keyHash": [
+            "274877906944"
+          ]
         },
         "27": {
           "keyName": "0",
@@ -465,47 +629,65 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [35],
+          "packetIndex": [
+            35
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [39],
+          "keyData": [
+            39
+          ],
           "default": true,
-          "keyHash": ["549755813888"]
+          "keyHash": [
+            "549755813888"
+          ]
         },
         "28": {
-          "keyName": "-",
+          "keyName": "Sz",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [41],
+          "packetIndex": [
+            41
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [45],
+          "keyData": [
+            45
+          ],
           "default": true,
-          "keyHash": ["35184372088832"]
+          "keyHash": [
+            "35184372088832"
+          ]
         },
         "29": {
-          "keyName": "=",
+          "keyName": "' `",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [42],
+          "packetIndex": [
+            42
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [46],
+          "keyData": [
+            46
+          ],
           "default": true,
-          "keyHash": ["70368744177664"]
+          "keyHash": [
+            "70368744177664"
+          ]
         },
         "30": {
           "keyName": "<---",
@@ -513,65 +695,91 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [38],
+          "packetIndex": [
+            38
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [42],
+          "keyData": [
+            42
+          ],
           "default": true,
           "keySpace": "keyboard-key wide3",
-          "keyHash": ["4398046511104"]
+          "keyHash": [
+            "4398046511104"
+          ]
         },
         "31": {
-          "keyName": "Ins",
+          "keyName": "Einfg",
           "width": 65,
           "height": 70,
           "left": 25,
           "top": 15,
-          "packetIndex": [69],
+          "packetIndex": [
+            69
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [73],
+          "keyData": [
+            73
+          ],
           "default": true,
-          "keyEmpty": ["keyboard-key-empty"],
-          "keyHash": ["9444732965739290427392"]
+          "keyEmpty": [
+            "keyboard-key-empty"
+          ],
+          "keyHash": [
+            "9444732965739290427392"
+          ]
         },
         "32": {
-          "keyName": "Home",
+          "keyName": "Pos 1",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [70],
+          "packetIndex": [
+            70
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [74],
+          "keyData": [
+            74
+          ],
           "default": true,
-          "keyHash": ["18889465931478580854784"]
+          "keyHash": [
+            "18889465931478580854784"
+          ]
         },
         "33": {
-          "keyName": "PgUp",
+          "keyName": "Bild↑",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [71],
+          "packetIndex": [
+            71
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [75],
+          "keyData": [
+            75
+          ],
           "default": true,
-          "keyHash": ["37778931862957161709568"]
+          "keyHash": [
+            "37778931862957161709568"
+          ]
         },
         "34": {
           "keyName": "Num",
@@ -579,16 +787,24 @@
           "height": 70,
           "left": 25,
           "top": 15,
-          "packetIndex": [79],
+          "packetIndex": [
+            79
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [83],
+          "keyData": [
+            83
+          ],
           "default": true,
-          "keyEmpty": ["keyboard-key-empty"],
-          "keyHash": ["9671406556917033397649408"]
+          "keyEmpty": [
+            "keyboard-key-empty"
+          ],
+          "keyHash": [
+            "9671406556917033397649408"
+          ]
         },
         "35": {
           "keyName": "/",
@@ -596,15 +812,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [80],
+          "packetIndex": [
+            80
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [84],
+          "keyData": [
+            84
+          ],
           "default": true,
-          "keyHash": ["19342813113834066795298816"]
+          "keyHash": [
+            "19342813113834066795298816"
+          ]
         },
         "36": {
           "keyName": "*",
@@ -612,15 +834,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [81],
+          "packetIndex": [
+            81
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [85],
+          "keyData": [
+            85
+          ],
           "default": true,
-          "keyHash": ["38685626227668133590597632"]
+          "keyHash": [
+            "38685626227668133590597632"
+          ]
         },
         "37": {
           "keyName": "-",
@@ -628,15 +856,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [82],
+          "packetIndex": [
+            82
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [86],
+          "keyData": [
+            86
+          ],
           "default": true,
-          "keyHash": ["77371252455336267181195264"]
+          "keyHash": [
+            "77371252455336267181195264"
+          ]
         }
       }
     },
@@ -649,16 +883,22 @@
           "height": 70,
           "left": 0,
           "top": 15,
-          "packetIndex": [39],
+          "packetIndex": [
+            39
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [43],
+          "keyData": [
+            43
+          ],
           "default": true,
           "keySpace": "keyboard-key wide",
-          "keyHash": ["8796093022208"]
+          "keyHash": [
+            "8796093022208"
+          ]
         },
         "39": {
           "keyName": "Q",
@@ -666,15 +906,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [16],
+          "packetIndex": [
+            16
+          ],
           "color": {
             "red": 255,
             "green": 0,
             "blue": 0
           },
-          "keyData": [20],
+          "keyData": [
+            20
+          ],
           "default": true,
-          "keyHash": ["1048576"]
+          "keyHash": [
+            "1048576"
+          ]
         },
         "40": {
           "keyName": "W",
@@ -682,15 +928,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [22],
+          "packetIndex": [
+            22
+          ],
           "color": {
             "red": 255,
             "green": 0,
             "blue": 0
           },
-          "keyData": [26],
+          "keyData": [
+            26
+          ],
           "default": true,
-          "keyHash": ["67108864"]
+          "keyHash": [
+            "67108864"
+          ]
         },
         "41": {
           "keyName": "E",
@@ -698,15 +950,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [4],
+          "packetIndex": [
+            4
+          ],
           "color": {
             "red": 255,
             "green": 0,
             "blue": 0
           },
-          "keyData": [8],
+          "keyData": [
+            8
+          ],
           "default": true,
-          "keyHash": ["256"]
+          "keyHash": [
+            "256"
+          ]
         },
         "42": {
           "keyName": "R",
@@ -714,15 +972,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [17],
+          "packetIndex": [
+            17
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [21],
+          "keyData": [
+            21
+          ],
           "default": true,
-          "keyHash": ["2097152"]
+          "keyHash": [
+            "2097152"
+          ]
         },
         "43": {
           "keyName": "T",
@@ -730,31 +994,43 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [19],
+          "packetIndex": [
+            19
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [23],
+          "keyData": [
+            23
+          ],
           "default": true,
-          "keyHash": ["8388608"]
+          "keyHash": [
+            "8388608"
+          ]
         },
         "44": {
-          "keyName": "Y",
+          "keyName": "Z",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [24],
+          "packetIndex": [
+            24
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [28],
+          "keyData": [
+            28
+          ],
           "default": true,
-          "keyHash": ["268435456"]
+          "keyHash": [
+            "268435456"
+          ]
         },
         "45": {
           "keyName": "U",
@@ -762,15 +1038,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [20],
+          "packetIndex": [
+            20
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [24],
+          "keyData": [
+            24
+          ],
           "default": true,
-          "keyHash": ["16777216"]
+          "keyHash": [
+            "16777216"
+          ]
         },
         "46": {
           "keyName": "I",
@@ -778,15 +1060,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [8],
+          "packetIndex": [
+            8
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [12],
+          "keyData": [
+            12
+          ],
           "default": true,
-          "keyHash": ["4096"]
+          "keyHash": [
+            "4096"
+          ]
         },
         "47": {
           "keyName": "O",
@@ -794,15 +1082,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [14],
+          "packetIndex": [
+            14
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [18],
+          "keyData": [
+            18
+          ],
           "default": true,
-          "keyHash": ["262144"]
+          "keyHash": [
+            "262144"
+          ]
         },
         "48": {
           "keyName": "P",
@@ -810,394 +1104,543 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [15],
+          "packetIndex": [
+            15
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [19],
+          "keyData": [
+            19
+          ],
           "default": true,
-          "keyHash": ["524288"]
+          "keyHash": [
+            "524288"
+          ]
         },
         "49": {
-          "keyName": "[ {",
+          "keyName": "Ü",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [43],
+          "packetIndex": [
+            43
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [47],
+          "keyData": [
+            47
+          ],
           "default": true,
-          "keyHash": ["140737488355328"]
+          "keyHash": [
+            "140737488355328"
+          ]
         },
         "50": {
-          "keyName": "] }",
+          "keyName": "+",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [44],
+          "packetIndex": [
+            44
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [48],
+          "keyData": [
+            48
+          ],
           "default": true,
-          "keyHash": ["281474976710656"]
+          "keyHash": [
+            "281474976710656"
+          ]
         },
         "51": {
-          "keyName": "\\ |",
-          "width": 107,
+          "keyName": "Entf",
+          "width": 65,
           "height": 70,
-          "left": 15,
+          "left": 147,
           "top": 15,
-          "packetIndex": [45],
+          "packetIndex": [
+            72
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [49],
+          "keyData": [
+            76
+          ],
           "default": true,
-          "keySpace": "keyboard-key wide",
-          "keyHash": ["562949953421312"]
+          "keyEmpty": [
+            "keyboard-key-empty",
+            "keyboard-key-empty",
+            "keyboard-key-empty"
+          ],
+          "keyHash": [
+            "75557863725914323419136"
+          ]
         },
         "52": {
-          "keyName": "Del",
+          "keyName": "Ende",
           "width": 65,
           "height": 70,
-          "left": 25,
+          "left": 15,
           "top": 15,
-          "packetIndex": [72],
+          "packetIndex": [
+            73
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [76],
+          "keyData": [
+            77
+          ],
           "default": true,
-          "keyEmpty": ["keyboard-key-empty"],
-          "keyHash": ["75557863725914323419136"]
+          "keyHash": [
+            "151115727451828646838272"
+          ]
         },
         "53": {
-          "keyName": "End",
+          "keyName": "Bild↓",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [73],
+          "packetIndex": [
+            74
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [77],
+          "keyData": [
+            78
+          ],
           "default": true,
-          "keyHash": ["151115727451828646838272"]
+          "keyHash": [
+            "302231454903657293676544"
+          ]
         },
         "54": {
-          "keyName": "PgDn",
-          "width": 65,
-          "height": 70,
-          "left": 15,
-          "top": 15,
-          "packetIndex": [74],
-          "color": {
-            "red": 0,
-            "green": 255,
-            "blue": 255
-          },
-          "keyData": [78],
-          "default": true,
-          "keyHash": ["302231454903657293676544"]
-        },
-        "55": {
           "keyName": "7",
           "width": 65,
           "height": 70,
           "left": 25,
           "top": 15,
-          "packetIndex": [91],
+          "packetIndex": [
+            91
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [95],
+          "keyData": [
+            95
+          ],
           "default": true,
-          "keyEmpty": ["keyboard-key-empty"],
-          "keyHash": ["39614081257132168796771975168"]
+          "keyEmpty": [
+            "keyboard-key-empty"
+          ],
+          "keyHash": [
+            "39614081257132168796771975168"
+          ]
         },
-        "56": {
+        "55": {
           "keyName": "8",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [92],
+          "packetIndex": [
+            92
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [96],
+          "keyData": [
+            96
+          ],
           "default": true,
-          "keyHash": ["79228162514264337593543950336"]
+          "keyHash": [
+            "79228162514264337593543950336"
+          ]
         },
-        "57": {
+        "56": {
           "keyName": "9",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [93],
+          "packetIndex": [
+            93
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [97],
+          "keyData": [
+            97
+          ],
           "default": true,
-          "keyHash": ["158456325028528675187087900672"]
+          "keyHash": [
+            "158456325028528675187087900672"
+          ]
         },
-        "58": {
+        "57": {
           "keyName": "+",
           "width": 65,
           "height": 155,
           "left": 15,
           "top": 15,
-          "packetIndex": [83],
+          "packetIndex": [
+            83
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [87],
+          "keyData": [
+            87
+          ],
           "default": true,
           "keySpace": "keyboard-key-125",
-          "keyHash": ["154742504910672534362390528"]
+          "keyHash": [
+            "154742504910672534362390528"
+          ]
         }
       }
     },
     "3": {
       "keys": {
-        "59": {
+        "58": {
           "keyName": "CAPS",
           "width": 131,
           "height": 70,
           "left": 0,
           "top": 15,
-          "packetIndex": [53],
+          "packetIndex": [
+            53
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [57],
+          "keyData": [
+            57
+          ],
           "default": true,
           "keySpace": "keyboard-key wide",
-          "keyHash": ["144115188075855872"]
+          "keyHash": [
+            "144115188075855872"
+          ]
         },
-        "60": {
+        "59": {
           "keyName": "A",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [0],
+          "packetIndex": [
+            0
+          ],
           "color": {
             "red": 255,
             "green": 0,
             "blue": 0
           },
-          "keyData": [4],
+          "keyData": [
+            4
+          ],
           "default": true,
-          "keyHash": ["16"]
+          "keyHash": [
+            "16"
+          ]
         },
-        "61": {
+        "60": {
           "keyName": "S",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [18],
+          "packetIndex": [
+            18
+          ],
           "color": {
             "red": 255,
             "green": 0,
             "blue": 0
           },
-          "keyData": [22],
+          "keyData": [
+            22
+          ],
           "default": true,
-          "keyHash": ["4194304"]
+          "keyHash": [
+            "4194304"
+          ]
         },
-        "62": {
+        "61": {
           "keyName": "D",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [3],
+          "packetIndex": [
+            3
+          ],
           "color": {
             "red": 255,
             "green": 0,
             "blue": 0
           },
-          "keyData": [7],
+          "keyData": [
+            7
+          ],
           "default": true,
-          "keyHash": ["128"]
+          "keyHash": [
+            "128"
+          ]
         },
-        "63": {
+        "62": {
           "keyName": "F",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [5],
+          "packetIndex": [
+            5
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [9],
+          "keyData": [
+            9
+          ],
           "default": true,
-          "keyHash": ["512"]
+          "keyHash": [
+            "512"
+          ]
         },
-        "64": {
+        "63": {
           "keyName": "G",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [6],
+          "packetIndex": [
+            6
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [10],
+          "keyData": [
+            10
+          ],
           "default": true,
-          "keyHash": ["1024"]
+          "keyHash": [
+            "1024"
+          ]
         },
-        "65": {
+        "64": {
           "keyName": "H",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [7],
+          "packetIndex": [
+            7
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [11],
+          "keyData": [
+            11
+          ],
           "default": true,
-          "keyHash": ["2048"]
+          "keyHash": [
+            "2048"
+          ]
         },
-        "66": {
+        "65": {
           "keyName": "J",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [9],
+          "packetIndex": [
+            9
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [13],
+          "keyData": [
+            13
+          ],
           "default": true,
-          "keyHash": ["8192"]
+          "keyHash": [
+            "8192"
+          ]
         },
-        "67": {
+        "66": {
           "keyName": "K",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
           "zone": 2,
-          "packetIndex": [10],
+          "packetIndex": [
+            10
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [14],
+          "keyData": [
+            14
+          ],
           "default": true,
-          "keyHash": ["16384"]
+          "keyHash": [
+            "16384"
+          ]
         },
-        "68": {
+        "67": {
           "keyName": "L",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [11],
+          "packetIndex": [
+            11
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [15],
+          "keyData": [
+            15
+          ],
           "default": true,
-          "keyHash": ["32768"]
+          "keyHash": [
+            "32768"
+          ]
+        },
+        "68": {
+          "keyName": "Ö",
+          "width": 65,
+          "height": 70,
+          "left": 15,
+          "top": 15,
+          "packetIndex": [
+            47
+          ],
+          "color": {
+            "red": 0,
+            "green": 255,
+            "blue": 255
+          },
+          "keyData": [
+            51
+          ],
+          "default": true,
+          "keyHash": [
+            "2251799813685248"
+          ]
         },
         "69": {
-          "keyName": "; :",
+          "keyName": "Ä",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [47],
+          "packetIndex": [
+            48
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [51],
+          "keyData": [
+            52
+          ],
           "default": true,
-          "keyHash": ["2251799813685248"]
+          "keyHash": [
+            "4503599627370496"
+          ]
         },
         "70": {
-          "keyName": "' ''",
+          "keyName": "# '",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [48],
+          "packetIndex": [
+            46
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [52],
+          "keyData": [
+            50
+          ],
           "default": true,
-          "keyHash": ["4503599627370496"]
+          "keyHash": [
+            "1125899906842624"
+          ]
         },
         "71": {
           "keyName": "Enter",
-          "width": 164,
+          "width": 84,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [36],
+          "packetIndex": [
+            36
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [40],
+          "keyData": [
+            40
+          ],
           "default": true,
-          "keySpace": "keyboard-key wide3",
-          "keyHash": ["1099511627776"]
+          "keySpace": "keyboard-key wide",
+          "keyHash": [
+            "1099511627776"
+          ]
         },
         "72": {
           "keyName": "4",
@@ -1205,16 +1648,28 @@
           "height": 70,
           "left": 275,
           "top": 15,
-          "packetIndex": [88],
+          "packetIndex": [
+            88
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyEmpty": ["keyboard-key-empty","keyboard-key-empty","keyboard-key-empty","keyboard-key-empty","keyboard-key-empty"],
-          "keyData": [92],
+          "keyEmpty": [
+            "keyboard-key-empty",
+            "keyboard-key-empty",
+            "keyboard-key-empty",
+            "keyboard-key-empty",
+            "keyboard-key-empty"
+          ],
+          "keyData": [
+            92
+          ],
           "default": true,
-          "keyHash": ["4951760157141521099596496896"]
+          "keyHash": [
+            "4951760157141521099596496896"
+          ]
         },
         "73": {
           "keyName": "5",
@@ -1222,15 +1677,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [89],
+          "packetIndex": [
+            89
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [93],
+          "keyData": [
+            93
+          ],
           "default": true,
-          "keyHash": ["9903520314283042199192993792"]
+          "keyHash": [
+            "9903520314283042199192993792"
+          ]
         },
         "74": {
           "keyName": "6",
@@ -1238,15 +1699,21 @@
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [90],
+          "packetIndex": [
+            90
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [94],
+          "keyData": [
+            94
+          ],
           "default": true,
-          "keyHash": ["19807040628566084398385987584"]
+          "keyHash": [
+            "19807040628566084398385987584"
+          ]
         }
       }
     },
@@ -1255,504 +1722,716 @@
       "keys": {
         "75": {
           "keyName": "Shift",
-          "width": 170,
+          "width": 90,
           "height": 70,
           "left": 0,
           "top": 15,
-          "packetIndex": [102],
+          "packetIndex": [
+            102
+          ],
           "color": {
             "red": 255,
             "green": 255,
             "blue": 0
           },
-          "keyData": [106],
+          "keyData": [
+            106
+          ],
           "default": true,
-          "keySpace": "keyboard-key wide3",
-          "keyHash": ["81129638414606681695789005144064"],
+          "keySpace": "keyboard-key wide",
+          "keyHash": [
+            "81129638414606681695789005144064"
+          ],
           "modifierPacketValue": 4
         },
         "76": {
-          "keyName": "Z",
+          "keyName": "< >",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [25],
+          "packetIndex": [
+            96
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [29],
+          "keyData": [
+            100
+          ],
           "default": true,
-          "keyHash": ["536870912"]
+          "keyHash": [
+            "1267650600228229401496703205376"
+          ]
         },
         "77": {
+          "keyName": "Y",
+          "width": 65,
+          "height": 70,
+          "left": 15,
+          "top": 15,
+          "packetIndex": [
+            25
+          ],
+          "color": {
+            "red": 0,
+            "green": 255,
+            "blue": 255
+          },
+          "keyData": [
+            29
+          ],
+          "default": true,
+          "keyHash": [
+            "536870912"
+          ]
+        },
+        "78": {
           "keyName": "X",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [23],
+          "packetIndex": [
+            23
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [27],
+          "keyData": [
+            27
+          ],
           "default": true,
-          "keyHash": ["134217728"]
+          "keyHash": [
+            "134217728"
+          ]
         },
-        "78": {
+        "79": {
           "keyName": "C",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [2],
+          "packetIndex": [
+            2
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [6],
+          "keyData": [
+            6
+          ],
           "default": true,
-          "keyHash": ["64"]
+          "keyHash": [
+            "64"
+          ]
         },
-        "79": {
+        "80": {
           "keyName": "V",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [21],
+          "packetIndex": [
+            21
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [25],
+          "keyData": [
+            25
+          ],
           "default": true,
-          "keyHash": ["33554432"]
+          "keyHash": [
+            "33554432"
+          ]
         },
-        "80": {
+        "81": {
           "keyName": "B",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [1],
+          "packetIndex": [
+            1
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [5],
+          "keyData": [
+            5
+          ],
           "default": true,
-          "keyHash": ["32"]
+          "keyHash": [
+            "32"
+          ]
         },
-        "81": {
+        "82": {
           "keyName": "N",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
           "zone": 2,
-          "packetIndex": [13],
+          "packetIndex": [
+            13
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [17],
+          "keyData": [
+            17
+          ],
           "default": true,
-          "keyHash": ["131072"]
+          "keyHash": [
+            "131072"
+          ]
         },
-        "82": {
+        "83": {
           "keyName": "M",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [12],
+          "packetIndex": [
+            12
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [16],
+          "keyData": [
+            16
+          ],
           "default": true,
-          "keyHash": ["65536"]
-        },
-        "83": {
-          "keyName": ", <",
-          "width": 65,
-          "height": 70,
-          "left": 15,
-          "top": 15,
-          "packetIndex": [50],
-          "color": {
-            "red": 0,
-            "green": 255,
-            "blue": 255
-          },
-          "keyData": [54],
-          "default": true,
-          "keyHash": ["18014398509481984"]
+          "keyHash": [
+            "65536"
+          ]
         },
         "84": {
-          "keyName": ". >",
+          "keyName": ", ;",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [51],
+          "packetIndex": [
+            50
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [55],
+          "keyData": [
+            54
+          ],
           "default": true,
-          "keyHash": ["36028797018963968"]
+          "keyHash": [
+            "18014398509481984"
+          ]
         },
         "85": {
-          "keyName": "/ ?",
+          "keyName": ". :",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [52],
+          "packetIndex": [
+            51
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [56],
+          "keyData": [
+            55
+          ],
           "default": true,
-          "keyHash": ["72057594037927936"]
+          "keyHash": [
+            "36028797018963968"
+          ]
         },
         "86": {
+          "keyName": "- _",
+          "width": 65,
+          "height": 70,
+          "left": 15,
+          "top": 15,
+          "packetIndex": [
+            52
+          ],
+          "color": {
+            "red": 0,
+            "green": 255,
+            "blue": 255
+          },
+          "keyData": [
+            56
+          ],
+          "default": true,
+          "keyHash": [
+            "72057594037927936"
+          ]
+        },
+        "87": {
           "keyName": "Shift",
           "width": 205,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [106],
+          "packetIndex": [
+            106
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [110],
+          "keyData": [
+            110
+          ],
           "default": true,
           "keySpace": "keyboard-key wide3",
-          "keyHash": ["1298074214633706907132624082305024"],
+          "keyHash": [
+            "1298074214633706907132624082305024"
+          ],
           "modifierPacketValue": 64
         },
-        "87": {
+        "88": {
           "keyName": "↑",
           "width": 65,
           "height": 70,
           "left": 105,
           "top": 15,
-          "packetIndex": [78],
+          "packetIndex": [
+            78
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [82],
+          "keyData": [
+            82
+          ],
           "default": true,
-          "keyEmpty": ["keyboard-key-empty","keyboard-key-empty"],
-          "keyHash": ["4835703278458516698824704"]
+          "keyEmpty": [
+            "keyboard-key-empty",
+            "keyboard-key-empty"
+          ],
+          "keyHash": [
+            "4835703278458516698824704"
+          ]
         },
-        "88": {
+        "89": {
           "keyName": "1",
           "width": 65,
           "height": 70,
           "left": 105,
           "top": 15,
-          "packetIndex": [85],
+          "packetIndex": [
+            85
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [89],
+          "keyData": [
+            89
+          ],
           "default": true,
-          "keyEmpty": ["keyboard-key-empty","keyboard-key-empty"],
-          "keyHash": ["618970019642690137449562112"]
+          "keyEmpty": [
+            "keyboard-key-empty",
+            "keyboard-key-empty"
+          ],
+          "keyHash": [
+            "618970019642690137449562112"
+          ]
         },
-        "89": {
+        "90": {
           "keyName": "2",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [86],
+          "packetIndex": [
+            86
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [90],
+          "keyData": [
+            90
+          ],
           "default": true,
-          "keyHash": ["1237940039285380274899124224"]
+          "keyHash": [
+            "1237940039285380274899124224"
+          ]
         },
-        "90": {
+        "91": {
           "keyName": "3",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [87],
+          "packetIndex": [
+            87
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [91],
+          "keyData": [
+            91
+          ],
           "default": true,
-          "keyHash": ["2475880078570760549798248448"]
+          "keyHash": [
+            "2475880078570760549798248448"
+          ]
         },
-        "91": {
+        "92": {
           "keyName": "Enter",
           "width": 65,
           "height": 155,
           "left": 15,
           "top": 15,
-          "packetIndex": [84],
+          "packetIndex": [
+            84
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [88],
+          "keyData": [
+            88
+          ],
           "default": true,
           "keySpace": "keyboard-key-125",
-          "keyHash": ["309485009821345068724781056"]
+          "keyHash": [
+            "309485009821345068724781056"
+          ]
         }
       }
     },
     "5": {
       "keys": {
-        "92": {
-          "keyName": "Ctrl",
+        "93": {
+          "keyName": "Strg",
           "width": 90,
           "height": 70,
           "left": 0,
           "top": 15,
-          "packetIndex": [101],
+          "packetIndex": [
+            101
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [105],
+          "keyData": [
+            105
+          ],
           "default": true,
-          "keyHash": ["40564819207303340847894502572032"],
+          "keyHash": [
+            "40564819207303340847894502572032"
+          ],
           "modifierPacketValue": 2
         },
-        "93": {
+        "94": {
           "keyName": "Win",
           "width": 90,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [104],
+          "packetIndex": [
+            104
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [108],
+          "keyData": [
+            108
+          ],
           "default": true,
-          "keyHash": ["324518553658426726783156020576256"]
+          "keyHash": [
+            "324518553658426726783156020576256"
+          ]
         },
-        "94": {
+        "95": {
           "keyName": "Alt",
           "width": 90,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [103],
+          "packetIndex": [
+            103
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [107],
+          "keyData": [
+            107
+          ],
           "default": true,
-          "keyHash": ["162259276829213363391578010288128"],
+          "keyHash": [
+            "162259276829213363391578010288128"
+          ],
           "modifierPacketValue": 8
         },
-        "95": {
+        "96": {
           "keyName": "----------",
           "width": 151,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [40],
+          "packetIndex": [
+            40
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [44],
+          "keyData": [
+            44
+          ],
           "default": true,
           "keySpace": "keyboard-key wide8",
-          "keyHash": ["17592186044416"]
+          "keyHash": [
+            "17592186044416"
+          ]
         },
-        "96": {
+        "97": {
           "keyName": "Alt",
           "width": 90,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [107],
+          "packetIndex": [
+            107
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [111],
+          "keyData": [
+            111
+          ],
           "default": true,
-          "keyHash": ["2596148429267413814265248164610048"],
+          "keyHash": [
+            "2596148429267413814265248164610048"
+          ],
           "modifierPacketValue": 128
         },
-        "97": {
+        "98": {
           "keyName": "Fn",
           "width": 90,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [118],
+          "packetIndex": [
+            118
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [122],
+          "keyData": [
+            122
+          ],
           "default": true,
-          "keyHash": ["5316911983139663491615228241121378304"]
+          "keyHash": [
+            "5316911983139663491615228241121378304"
+          ]
         },
-        "98": {
+        "99": {
           "keyName": "Menu",
           "width": 90,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [97],
+          "packetIndex": [
+            97
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [101],
+          "keyData": [
+            101
+          ],
           "default": true,
-          "keyHash": ["2535301200456458802993406410752"]
+          "keyHash": [
+            "2535301200456458802993406410752"
+          ]
         },
-        "99": {
-          "keyName": "Ctrl",
+        "100": {
+          "keyName": "Strg",
           "width": 90,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [105],
+          "packetIndex": [
+            105
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [109],
+          "keyData": [
+            109
+          ],
           "default": true,
           "keySpace": "keyboard-key wide",
-          "keyHash": ["649037107316853453566312041152512"],
+          "keyHash": [
+            "649037107316853453566312041152512"
+          ],
           "modifierPacketValue": 32
         },
-        "100": {
+        "101": {
           "keyName": "←",
           "width": 65,
           "height": 70,
           "left": 25,
           "top": 15,
-          "packetIndex": [76],
+          "packetIndex": [
+            76
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [80],
+          "keyData": [
+            80
+          ],
           "default": true,
-          "keyEmpty": ["keyboard-key-empty"],
-          "keyHash": ["1208925819614629174706176"]
+          "keyEmpty": [
+            "keyboard-key-empty"
+          ],
+          "keyHash": [
+            "1208925819614629174706176"
+          ]
         },
-        "101": {
+        "102": {
           "keyName": "↓",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [77],
+          "packetIndex": [
+            77
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [81],
+          "keyData": [
+            81
+          ],
           "default": true,
-          "keyHash": ["2417851639229258349412352"]
+          "keyHash": [
+            "2417851639229258349412352"
+          ]
         },
-        "102": {
+        "103": {
           "keyName": "→",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [75],
+          "packetIndex": [
+            75
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [79],
+          "keyData": [
+            79
+          ],
           "default": true,
-          "keyHash": ["604462909807314587353088"]
+          "keyHash": [
+            "604462909807314587353088"
+          ]
         },
-        "103": {
+        "104": {
           "keyName": "0",
           "width": 145,
           "height": 70,
           "left": 25,
           "top": 15,
-          "packetIndex": [94],
+          "packetIndex": [
+            94
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [98],
+          "keyData": [
+            98
+          ],
           "default": true,
-          "keyEmpty": ["keyboard-key-empty"],
+          "keyEmpty": [
+            "keyboard-key-empty"
+          ],
           "keySpace": "keyboard-key wide",
-          "keyHash": ["316912650057057350374175801344"]
+          "keyHash": [
+            "316912650057057350374175801344"
+          ]
         },
-        "104": {
-          "keyName": ".",
+        "105": {
+          "keyName": ",",
           "width": 65,
           "height": 70,
           "left": 15,
           "top": 15,
-          "packetIndex": [95],
+          "packetIndex": [
+            95
+          ],
           "color": {
             "red": 0,
             "green": 255,
             "blue": 255
           },
-          "keyData": [99],
+          "keyData": [
+            99
+          ],
           "default": true,
-          "keyHash": ["633825300114114700748351602688"]
+          "keyHash": [
+            "633825300114114700748351602688"
+          ]
         }
       }
     }
