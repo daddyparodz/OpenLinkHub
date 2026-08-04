@@ -78,3 +78,19 @@ func TestNonKeyboardReportDoesNotInvokeProfileSwitch(t *testing.T) {
 		t.Fatalf("profile switch invoked %d times for non-keyboard report", switches)
 	}
 }
+
+func TestClusterSwitchDoesNotRequireKeyboardClusterMembership(t *testing.T) {
+	switches := 0
+	d := &Device{
+		DeviceProfile: &DeviceProfile{RGBCluster: false},
+		clusterSwitchHook: func() bool {
+			switches++
+			return true
+		},
+	}
+
+	d.rotateDeviceProfile()
+	if switches != 1 {
+		t.Fatalf("cluster switch invoked %d times, want 1", switches)
+	}
+}

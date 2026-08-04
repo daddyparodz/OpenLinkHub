@@ -59,6 +59,17 @@ func TestEnsureSwitchProfilesMigratesLegacyPair(t *testing.T) {
 	}
 }
 
+func TestHasControllers(t *testing.T) {
+	d := &Device{}
+	if d.HasControllers() {
+		t.Fatal("empty cluster unexpectedly reports active controllers")
+	}
+	d.Controllers = []*common.ClusterController{{Serial: "fans"}}
+	if !d.HasControllers() {
+		t.Fatal("cluster with a controller reports no active controllers")
+	}
+}
+
 func TestDistributeColorsWritesEveryController(t *testing.T) {
 	type write struct {
 		serial  string

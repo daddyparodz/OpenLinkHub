@@ -154,6 +154,15 @@ func (d *Device) RemoveDeviceControllerBySerial(serial string) {
 	}
 }
 
+// HasControllers reports whether the cluster currently controls at least one
+// device. It lets input devices target the active cluster without having to
+// join its RGB frame stream themselves.
+func (d *Device) HasControllers() bool {
+	d.mutex.RLock()
+	defer d.mutex.RUnlock()
+	return len(d.Controllers) > 0
+}
+
 // GetRgbProfiles will return RGB profiles for a target device
 func (d *Device) GetRgbProfiles() interface{} {
 	return d.Rgb

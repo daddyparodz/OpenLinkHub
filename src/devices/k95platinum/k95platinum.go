@@ -118,6 +118,7 @@ type Device struct {
 	ledDataMutex       sync.RWMutex
 	dispatch           dispatcher.DeviceDispatcher
 	profileSwitchHook  func()
+	clusterSwitchHook  func() bool
 	profileSwitchNow   func() time.Time
 	profileSwitchLatch bool
 	profileSwitchUpAt  time.Time
@@ -1197,20 +1198,25 @@ func (d *Device) ChangeDeviceProfile(profileName string) uint8 {
 	return 0
 }
 
-// rotateClusterProfile rotates persisted cluster RGB profiles.
-func (d *Device) rotateClusterProfile() {
-	clusterDevice := cluster.Get()
-	if clusterDevice == nil {
-		return
+// rotateClusterProfile rotates persisted cluster RGB profiles when a cluster
+// is actively controlling devices. The keyboard does not need to join the
+// cluster RGB stream for its profile key to control that cluster.
+func (d *Device) rotateClusterProfile() bool {
+	if d.clusterSwitchHook != nil {
+		return d.clusterSwitchHook()
 	}
 
-	clusterDevice.RotateSwitchProfile()
+	clusterDevice := cluster.Get()
+	if clusterDevice == nil || !clusterDevice.HasControllers() {
+		return false
+	}
+
+	return clusterDevice.RotateSwitchProfile() == 1
 }
 
 // rotateDeviceProfile will rotate and activate next user profile
 func (d *Device) rotateDeviceProfile() {
-	if d.DeviceProfile != nil && d.DeviceProfile.RGBCluster {
-		d.rotateClusterProfile()
+	if d.rotateClusterProfile() {
 		return
 	}
 
