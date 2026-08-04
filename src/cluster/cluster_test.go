@@ -4,6 +4,7 @@ import (
 	"OpenLinkHub/src/common"
 	"OpenLinkHub/src/rgb"
 	"bytes"
+	"encoding/json"
 	"reflect"
 	"testing"
 )
@@ -67,6 +68,22 @@ func TestHasControllers(t *testing.T) {
 	d.Controllers = []*common.ClusterController{{Serial: "fans"}}
 	if !d.HasControllers() {
 		t.Fatal("cluster with a controller reports no active controllers")
+	}
+}
+
+func TestClusterControllerCanBeSerialized(t *testing.T) {
+	d := &Device{Controllers: []*common.ClusterController{{
+		Product:      "COMMANDER PRO",
+		Serial:       "controller",
+		WriteColorEx: func([]byte, int) {},
+	}}}
+
+	data, err := json.Marshal(d)
+	if err != nil {
+		t.Fatalf("cluster JSON serialization failed: %v", err)
+	}
+	if bytes.Contains(data, []byte("WriteColorEx")) {
+		t.Fatalf("cluster JSON leaked internal callback: %s", data)
 	}
 }
 
