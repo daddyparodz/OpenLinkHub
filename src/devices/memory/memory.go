@@ -232,9 +232,14 @@ func Init(_, _ uint16, _, path string) *common.Device {
 	if count == 0 {
 		return nil // Nothing found
 	}
-	d.setAutoRefresh()         // Set auto device refresh
-	d.saveDeviceProfile()      // Save profile
-	d.setDeviceColor()         // Device color
+	d.setAutoRefresh()    // Set auto device refresh
+	d.saveDeviceProfile() // Save profile
+	d.setDeviceColor()    // Device color
+	// Some DIMM RGB controllers are not ready to accept every color packet
+	// immediately after SMBus probing. Reapply the current profile once the
+	// controllers have settled, just as a profile change does at runtime.
+	time.Sleep(250 * time.Millisecond)
+	d.setDeviceColor()
 	d.setTemperatures()        // Initial temp
 	d.getTemperatureProbe()    // Devices with temperature value
 	d.setupOpenRGBController() // OpenRGB Controller
