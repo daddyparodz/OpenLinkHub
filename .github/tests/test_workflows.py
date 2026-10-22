@@ -24,6 +24,23 @@ class WorkflowTests(unittest.TestCase):
                 self.assertNotIn('sudo ', commands)
                 self.assertIn('libudev-dev libpipewire-0.3-dev pkg-config', commands)
 
+    def test_codeql_tracing_prerequisites(self):
+        job = yaml.safe_load((ROOT / '.github/workflows/codeql.yml').read_text())['jobs']['analyze']
+        steps = job['steps']
+        init_index = next(i for i, s in enumerate(steps) if s.get('uses') == 'github/codeql-action/init@v4')
+        installs = [s['run'] for s in steps[:init_index] if 'apt-get install' in s.get('run', '')]
+        self.assertTrue(any('file' in command.split() for command in installs),
+                        'CodeQL needs file before init to configure tracing of static Go binaries')
+        self.assertNotIn('LD_PRELOAD', str(job))
+        self.assertNotIn('privileged', str(job))
+        self.assertNotIn('security-opt', str(job))
+        self.assertFalse(job.get('continue-on-error', False))
+        self.assertTrue(all(not s.get('continue-on-error', False) for s in steps))
+        analyze = next(s for s in steps if s.get('uses') == 'github/codeql-action/analyze@v4')
+        self.assertEqual(analyze.get('with', {}).get('wait-for-processing'), True)
+        self.assertNotEqual(analyze.get('with', {}).get('upload'), 'never')
+        self.assertNotEqual(analyze.get('with', {}).get('skip-queries'), True)
+
     def test_owner_event_guards(self):
         for name, job_id in [('go.yml', 'build'), ('codeql.yml', 'analyze')]:
             job = yaml.safe_load((ROOT / '.github/workflows' / name).read_text())['jobs'][job_id]
