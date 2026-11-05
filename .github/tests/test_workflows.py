@@ -14,7 +14,7 @@ class WorkflowTests(unittest.TestCase):
                 workflow = yaml.safe_load((ROOT / '.github/workflows' / name).read_text())
                 job = workflow['jobs'][job_id]
                 self.assertEqual(job['runs-on'], ['self-hosted', 'linux', 'x64'])
-                self.assertEqual(job['container']['image'], 'golang:1.25.0-bookworm')
+                self.assertEqual(job['container']['image'], 'golang:1.26.0-bookworm')
                 checkout = next(s for s in job['steps'] if s.get('uses', '').startswith('actions/checkout@'))
                 self.assertIs(checkout['with']['persist-credentials'], False)
                 self.assertEqual(checkout['with']['ref'], '${{ github.event.pull_request.head.sha || github.sha }}')

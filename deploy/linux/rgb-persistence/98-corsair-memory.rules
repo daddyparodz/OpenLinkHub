@@ -1,0 +1,1 @@
+SUBSYSTEM=="i2c-dev", ATTR{name}=="SMBus I801 adapter at 0000:00:1f.4", SYMLINK+="i2c-openlinkhub-memory", GROUP="openlinkhub", MODE="0660", TAG+="systemd"

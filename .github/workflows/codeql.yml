@@ -15,7 +15,7 @@ jobs:
        github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: [self-hosted, linux, x64]
     container:
-      image: golang:1.25.0-bookworm
+      image: golang:1.26.0-bookworm
     permissions:
       contents: read
       security-events: write
