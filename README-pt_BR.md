@@ -13,6 +13,7 @@ Gerencie iluminação RGB, velocidades de ventiladores, métricas do sistema, be
 - Suporte para memória DDR4 e DDR5
 - Perfis de ventiladores personalizados, sensores de temperatura e editor RGB
 - Se precisar de menu na bandeja do sistema - https://github.com/jurkovic-nikola/openlinkhub-tray
+- XENEON EDGE App - https://github.com/jurkovic-nikola/openlinkhub-xeneon
 - [Lista de dispositivos suportados](docs/supported-devices.md)
 - [SCUF Controller Audio Config](docs/scuf-controller.md)
 - [KDE System Monitor Sensor Face](https://github.com/jurkovic-nikola/openlinkhub-sensorfaces)
@@ -75,7 +76,7 @@ $ sudo dnf install OpenLinkHub
 - usbutils
 - libpipewire-dev
 - pkg-config
-- go 1.25.0 - https://go.dev/dl/
+- go 1.26.0 - https://go.dev/dl/
 ```bash
 # Pacotes necessários (deb)
 $ sudo apt-get install libudev-dev

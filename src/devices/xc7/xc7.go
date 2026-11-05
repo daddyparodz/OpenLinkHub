@@ -164,6 +164,8 @@ func Init(vendorId, productId uint16, serial, _ string) *common.Device {
 			100: "Arc",
 			101: "Double Arc",
 			102: "Animation",
+			103: "Dots",
+			104: "Fill",
 		},
 		LCDRotations: map[int]string{
 			0: "default",
@@ -1521,12 +1523,55 @@ func (d *Device) setupLCD(reload bool) {
 						case 4: // GPU utilization
 							val = systeminfo.GetGPUUtilization()
 							sensor = 4
+							break
+						case 5: // Pump speed
+							val = 0
+							sensor = 5
+							arcType = 5
+							break
+						case 6: // Temperature Probe
+							val = 0
+							sensor = 6
+							arcType = 6
+							break
 						}
 						image := lcd.GenerateArcScreenImage(arcType, sensor, val)
 						if image == nil {
 							break // Fail
 						}
 						d.transfer(image, transferTypeLcd)
+					}
+				case lcd.DisplayDots:
+					{
+						values := []float32{
+							temperatures.GetCpuTemperature(),
+							temperatures.GetGpuTemperature(),
+							d.getLiquidTemperature(),
+							float32(systeminfo.GetCpuUtilization()),
+							float32(systeminfo.GetGPUUtilization()),
+							0,
+							0, // Temperature probe placeholder
+						}
+						image := lcd.GenerateDotsScreenImage(values)
+						if image != nil {
+							d.transfer(image, transferTypeLcd)
+						}
+					}
+				case lcd.DisplayFill:
+					{
+						values := []float32{
+							temperatures.GetCpuTemperature(),
+							temperatures.GetGpuTemperature(),
+							d.getLiquidTemperature(),
+							float32(systeminfo.GetCpuUtilization()),
+							float32(systeminfo.GetGPUUtilization()),
+							0,
+							0, // Temperature probe placeholder
+						}
+						image := lcd.GenerateFillScreenImage(values)
+						if image != nil {
+							d.transfer(image, transferTypeLcd)
+						}
 					}
 				case lcd.DisplayDoubleArc:
 					{
@@ -1536,6 +1581,8 @@ func (d *Device) setupLCD(reload bool) {
 							d.getLiquidTemperature(),
 							float32(systeminfo.GetCpuUtilization()),
 							float32(systeminfo.GetGPUUtilization()),
+							0,
+							0, // Temperature probe placeholder
 						}
 						image := lcd.GenerateDoubleArcScreenImage(values)
 						if image != nil {
@@ -1556,6 +1603,9 @@ func (d *Device) setupLCD(reload bool) {
 						if image != nil {
 							imageLen := len(image)
 							for i := 0; i < imageLen; i++ {
+								if d.DeviceProfile.LCDMode != lcd.DisplayAnimation {
+									break
+								}
 								d.transfer(image[i].Buffer, transferTypeLcd)
 								if i != imageLen-1 {
 									if image[i].Delay > 0 {
@@ -1616,6 +1666,9 @@ func (d *Device) setupLCDImage() {
 					for i := 0; i < d.LCDImage.Frames; i++ {
 						if d.Exit {
 							return
+						}
+						if d.DeviceProfile.LCDMode != lcd.DisplayImage {
+							break
 						}
 						data := d.LCDImage.Buffer[i]
 						buffer := data.Buffer

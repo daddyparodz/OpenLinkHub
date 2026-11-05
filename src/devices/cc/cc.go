@@ -376,6 +376,8 @@ func Init(vendorId, productId uint16, serial, path string) *common.Device {
 			100: "Arc",
 			101: "Double Arc",
 			102: "Animation",
+			103: "Dots",
+			104: "Fill",
 		},
 		LCDRotations: map[int]string{
 			0: "default",
@@ -1563,7 +1565,8 @@ func (d *Device) getDevices() int {
 		if d.Debug {
 			logger.Log(logger.Fields{"serial": d.Serial, "status": status, "device": d.Product, "channel": i}).Info("getDevices() - Speed")
 		}
-		if status == 0x07 {
+		// 0x07: connected and spinning; 0x02: connected but not spinning (zero-RPM / no tach signal)
+		if status == 0x07 || status == 0x02 {
 			// Get a persistent speed profile. Fallback to Normal is anything fails
 			speedProfile := "Normal"
 			label := "Set Label"
@@ -2131,7 +2134,8 @@ func (d *Device) getDeviceData() {
 
 		currentSensor := sensorData[s : s+2]
 		status := channels[6:][i]
-		if status == 0x07 {
+		// 0x07: connected and spinning; 0x02: connected but not spinning (zero-RPM / no tach signal)
+		if status == 0x07 || status == 0x02 {
 			if _, ok := d.Devices[m]; ok {
 				rpm := int16(binary.LittleEndian.Uint16(currentSensor))
 				if rpm > 20 {
@@ -3764,12 +3768,55 @@ func (d *Device) setupLCD(reload bool) {
 						case 4: // GPU utilization
 							val = systeminfo.GetGPUUtilization()
 							sensor = 4
+							break
+						case 5: // Pump speed
+							val = int(d.getPumpSpeed())
+							sensor = 5
+							arcType = 5
+							break
+						case 6: // Temperature Probe
+							val = 0
+							sensor = 6
+							arcType = 6
+							break
 						}
 						image := lcd.GenerateArcScreenImage(arcType, sensor, val)
 						if image == nil {
 							break // Fail
 						}
 						d.transferToLcd(image)
+					}
+				case lcd.DisplayDots:
+					{
+						values := []float32{
+							temperatures.GetCpuTemperature(),
+							temperatures.GetGpuTemperature(),
+							d.getLiquidTemperature(),
+							float32(systeminfo.GetCpuUtilization()),
+							float32(systeminfo.GetGPUUtilization()),
+							float32(d.getPumpSpeed()),
+							0, // Temperature probe placeholder
+						}
+						image := lcd.GenerateDotsScreenImage(values)
+						if image != nil {
+							d.transferToLcd(image)
+						}
+					}
+				case lcd.DisplayFill:
+					{
+						values := []float32{
+							temperatures.GetCpuTemperature(),
+							temperatures.GetGpuTemperature(),
+							d.getLiquidTemperature(),
+							float32(systeminfo.GetCpuUtilization()),
+							float32(systeminfo.GetGPUUtilization()),
+							float32(d.getPumpSpeed()),
+							0, // Temperature probe placeholder
+						}
+						image := lcd.GenerateFillScreenImage(values)
+						if image != nil {
+							d.transferToLcd(image)
+						}
 					}
 				case lcd.DisplayDoubleArc:
 					{
@@ -3779,6 +3826,8 @@ func (d *Device) setupLCD(reload bool) {
 							d.getLiquidTemperature(),
 							float32(systeminfo.GetCpuUtilization()),
 							float32(systeminfo.GetGPUUtilization()),
+							float32(d.getPumpSpeed()),
+							0, // Temperature probe placeholder
 						}
 						image := lcd.GenerateDoubleArcScreenImage(values)
 						if image != nil {
@@ -3799,6 +3848,9 @@ func (d *Device) setupLCD(reload bool) {
 						if image != nil {
 							imageLen := len(image)
 							for i := 0; i < imageLen; i++ {
+								if d.DeviceProfile.LCDMode != lcd.DisplayAnimation {
+									break
+								}
 								d.transferToLcd(image[i].Buffer)
 								if i != imageLen-1 {
 									if image[i].Delay > 0 {
@@ -3857,6 +3909,9 @@ func (d *Device) setupLCDImage() {
 			default:
 				if d.LCDImage.Frames > 1 {
 					for i := 0; i < d.LCDImage.Frames; i++ {
+						if d.DeviceProfile.LCDMode != lcd.DisplayImage {
+							break
+						}
 						data := d.LCDImage.Buffer[i]
 						buffer := data.Buffer
 						delay := data.Delay

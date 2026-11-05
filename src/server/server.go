@@ -6,6 +6,7 @@ package server
 
 import (
 	"OpenLinkHub/src/audio"
+	"OpenLinkHub/src/auth"
 	"OpenLinkHub/src/backup"
 	"OpenLinkHub/src/common"
 	"OpenLinkHub/src/config"
@@ -21,6 +22,7 @@ import (
 	"OpenLinkHub/src/metrics"
 	"OpenLinkHub/src/rgb"
 	"OpenLinkHub/src/scheduler"
+	"OpenLinkHub/src/server/certificate"
 	"OpenLinkHub/src/server/requests"
 	"OpenLinkHub/src/stats"
 	"OpenLinkHub/src/systeminfo"
@@ -28,12 +30,16 @@ import (
 	"OpenLinkHub/src/temperatures"
 	"OpenLinkHub/src/templates"
 	"OpenLinkHub/src/version"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 // Response contains data what is sent back to a client
@@ -162,6 +168,38 @@ func getGpuTemperatureClean(w http.ResponseWriter, _ *http.Request) {
 	resp.Send(w)
 }
 
+// getMemoryUsage will return current memory and swap usage.
+func getMemoryUsage(w http.ResponseWriter, _ *http.Request) {
+	data, err := systeminfo.GetMemoryUsage()
+	status := 1
+	if err != nil {
+		status = 0
+	}
+
+	resp := &Response{
+		Code:   http.StatusOK,
+		Status: status,
+		Data:   data,
+	}
+	resp.Send(w)
+}
+
+// getStorageUsage will return capacity for mounted local filesystems.
+func getStorageUsage(w http.ResponseWriter, _ *http.Request) {
+	data, err := systeminfo.GetStorageUsage()
+	status := 1
+	if err != nil {
+		status = 0
+	}
+
+	resp := &Response{
+		Code:   http.StatusOK,
+		Status: status,
+		Data:   data,
+	}
+	resp.Send(w)
+}
+
 // getStorageTemperature will return current storage temperature
 func getStorageTemperature(w http.ResponseWriter, _ *http.Request) {
 	resp := &Response{
@@ -223,6 +261,39 @@ func getDevices(w http.ResponseWriter, r *http.Request) {
 			Device: devices.GetDevice(deviceId),
 		}
 		resp.Send(w)
+	}
+}
+
+// getDevices returns response on /devices
+func getDeviceProfiles(w http.ResponseWriter, r *http.Request) {
+	deviceId, valid := getVar("/api/device/profiles/", r)
+	if !valid {
+		resp := &Response{
+			Code: http.StatusOK,
+			Data: nil,
+		}
+		resp.Send(w)
+	} else {
+		results := devices.CallDeviceMethod(
+			deviceId,
+			"GetDeviceProfiles",
+		)
+
+		if len(results) > 0 {
+			resp := &Response{
+				Code:   http.StatusOK,
+				Status: 1,
+				Data:   results[0].Interface(),
+			}
+			resp.Send(w)
+		} else {
+			resp := &Response{
+				Code:   http.StatusOK,
+				Status: 0,
+				Data:   nil,
+			}
+			resp.Send(w)
+		}
 	}
 }
 
@@ -582,6 +653,16 @@ func getMouseButtons(w http.ResponseWriter, _ *http.Request) {
 		Code:   http.StatusOK,
 		Status: 1,
 		Data:   inputmanager.GetMouseButtons(),
+	}
+	resp.Send(w)
+}
+
+// getDeviceStats returns device temperature and speed readings
+func getDeviceStats(w http.ResponseWriter, _ *http.Request) {
+	resp := &Response{
+		Code:   http.StatusOK,
+		Status: 1,
+		Data:   stats.GetAIOStats(),
 	}
 	resp.Send(w)
 }
@@ -1113,6 +1194,50 @@ func changeBrightnessGradual(w http.ResponseWriter, r *http.Request) {
 	resp.Send(w)
 }
 
+// changeContrastGradual handles user contrast change via defined number from 0-100
+func changeContrastGradual(w http.ResponseWriter, r *http.Request) {
+	request := requests.ProcessContrastChangeGradual(r)
+	resp := &Response{
+		Code:    request.Code,
+		Status:  request.Status,
+		Message: request.Message,
+	}
+	resp.Send(w)
+}
+
+// changeBacklightGradual handles user backlight change via defined number from 0-100
+func changeBacklightGradual(w http.ResponseWriter, r *http.Request) {
+	request := requests.ProcessBacklightChangeGradual(r)
+	resp := &Response{
+		Code:    request.Code,
+		Status:  request.Status,
+		Message: request.Message,
+	}
+	resp.Send(w)
+}
+
+// changeColorTone handles user color tone change via defined number from 0-100
+func changeColorTone(w http.ResponseWriter, r *http.Request) {
+	request := requests.ProcessColortoneChange(r)
+	resp := &Response{
+		Code:    request.Code,
+		Status:  request.Status,
+		Message: request.Message,
+	}
+	resp.Send(w)
+}
+
+// resetDeviceSettings handles user device settings reset
+func resetDeviceSettings(w http.ResponseWriter, r *http.Request) {
+	request := requests.ProcessDeviceSettingsReset(r)
+	resp := &Response{
+		Code:    request.Code,
+		Status:  request.Status,
+		Message: request.Message,
+	}
+	resp.Send(w)
+}
+
 // changePosition handles device position change
 func changePosition(w http.ResponseWriter, r *http.Request) {
 	request := requests.ProcessPositionChange(r)
@@ -1201,9 +1326,64 @@ func getRgbOverride(w http.ResponseWriter, r *http.Request) {
 	resp.Send(w)
 }
 
-// getRgbOverride return RGB override for given device
+// setRgbOverride sets RGB override for given device
 func setRgbOverride(w http.ResponseWriter, r *http.Request) {
 	request := requests.ProcessSetRgbOverride(r)
+	resp := &Response{
+		Code:    request.Code,
+		Status:  request.Status,
+		Message: request.Message,
+	}
+	resp.Send(w)
+}
+
+// getTimewarp return RGB timewarp for given device
+func getRgbTimewarp(w http.ResponseWriter, r *http.Request) {
+	request := requests.ProcessGetRgbTimewarp(r)
+	resp := &Response{
+		Code:   request.Code,
+		Status: request.Status,
+		Data:   request.Data,
+	}
+	resp.Send(w)
+}
+
+// getXeneonWidget return xeneon widget
+func getXeneonWidget(w http.ResponseWriter, r *http.Request) {
+	request := requests.ProcessGetXeneonWidget(r)
+	resp := &Response{
+		Code:   request.Code,
+		Status: request.Status,
+		Data:   request.Data,
+	}
+	resp.Send(w)
+}
+
+// setXeneonWidgetArea sets a widget area
+func setXeneonWidgetArea(w http.ResponseWriter, r *http.Request) {
+	request := requests.ProcessSetXeneonWidgetArea(r)
+	resp := &Response{
+		Code:    request.Code,
+		Status:  request.Status,
+		Message: request.Message,
+	}
+	resp.Send(w)
+}
+
+// saveXeneonWidget saves xeneon widget configuration
+func saveXeneonWidget(w http.ResponseWriter, r *http.Request) {
+	request := requests.ProcessSaveXeneonWidget(r)
+	resp := &Response{
+		Code:    request.Code,
+		Status:  request.Status,
+		Message: request.Message,
+	}
+	resp.Send(w)
+}
+
+// setRgbTimewarp sets RGB timewarp for given device
+func setRgbTimewarp(w http.ResponseWriter, r *http.Request) {
+	request := requests.ProcessSetRgbTimewarp(r)
 	resp := &Response{
 		Code:    request.Code,
 		Status:  request.Status,
@@ -1565,6 +1745,17 @@ func changeLeftHandMode(w http.ResponseWriter, r *http.Request) {
 // changeLiftHeight handles device lift height change
 func changeLiftHeight(w http.ResponseWriter, r *http.Request) {
 	request := requests.ProcessChangeLiftHeight(r)
+	resp := &Response{
+		Code:    request.Code,
+		Status:  request.Status,
+		Message: request.Message,
+	}
+	resp.Send(w)
+}
+
+// changeSurfaceSelection handles device surface selection change
+func changeSurfaceSelection(w http.ResponseWriter, r *http.Request) {
+	request := requests.ProcessChangeSurfaceSelection(r)
 	resp := &Response{
 		Code:    request.Code,
 		Status:  request.Status,
@@ -2026,6 +2217,50 @@ func updateDisplayData(w http.ResponseWriter, r *http.Request) {
 	resp.Send(w)
 }
 
+// getHardwareLights return supported device hardware lights
+func getHardwareLights(w http.ResponseWriter, r *http.Request) {
+	request := requests.ProcessGetHardwareLights(r)
+	resp := &Response{
+		Code:   request.Code,
+		Status: request.Status,
+		Data:   request.Data,
+	}
+	resp.Send(w)
+}
+
+// setHardwareLights will set supported device hardware lights
+func setHardwareLights(w http.ResponseWriter, r *http.Request) {
+	request := requests.ProcessSetHardwareLights(r)
+	resp := &Response{
+		Code:    request.Code,
+		Status:  request.Status,
+		Message: request.Message,
+	}
+	resp.Send(w)
+}
+
+// setHardwareLights will set supported device hardware light profile
+func setHardwareLight(w http.ResponseWriter, r *http.Request) {
+	request := requests.ProcessSetHardwareLight(r)
+	resp := &Response{
+		Code:    request.Code,
+		Status:  request.Status,
+		Message: request.Message,
+	}
+	resp.Send(w)
+}
+
+// updateAuthSettings will update dashboard auth
+func updateAuthSettings(w http.ResponseWriter, r *http.Request) {
+	request := requests.ProcessAuthSettings(r)
+	resp := &Response{
+		Code:    request.Code,
+		Status:  request.Status,
+		Message: request.Message,
+	}
+	resp.Send(w)
+}
+
 // uiDeviceOverview handles device overview
 func uiDeviceOverview(w http.ResponseWriter, r *http.Request) {
 	deviceId, valid := getVar("/device/", r)
@@ -2472,6 +2707,28 @@ func uiXeneon(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
+// uiLogin handles user login
+func uiLogin(w http.ResponseWriter, _ *http.Request) {
+	web := templates.Web{}
+	web.Title = dashboard.GetDashboard().PageTitle
+	web.Dashboard = dashboard.GetDashboard()
+	web.Page = "login"
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
+
+	t := templates.GetTemplate()
+	err := t.ExecuteTemplate(w, "login.html", web)
+	if err != nil {
+		fmt.Println(err)
+		resp := &Response{
+			Code:    http.StatusInternalServerError,
+			Message: language.GetValue("txtUnableToServeWebContent"),
+		}
+		resp.Send(w)
+	}
+}
+
 // getVar will extract dynamic path from GET request
 func getVar(path string, r *http.Request) (string, bool) {
 	value := strings.TrimPrefix(r.URL.Path, path)
@@ -2540,6 +2797,7 @@ func setRoutes() http.Handler {
 	handleFunc(r, "/api/storageTemp", http.MethodGet, getStorageTemperature)
 	handleFunc(r, "/api/batteryStats", http.MethodGet, getBatteryStats)
 	handleFunc(r, "/api/devices/", http.MethodGet, getDevices)
+	handleFunc(r, "/api/device/profiles/", http.MethodGet, getDeviceProfiles)
 	handleFunc(r, "/api/color/", http.MethodGet, getColor)
 	handleFunc(r, "/api/color/zone/", http.MethodGet, getZoneColor)
 	handleFunc(r, "/api/color/profile/", http.MethodGet, getColorData)
@@ -2560,6 +2818,9 @@ func setRoutes() http.Handler {
 	handleFunc(r, "/api/keyboard/getPerformance/", http.MethodGet, getKeyboardPerformance)
 	handleFunc(r, "/api/keyboard/getFlashTap/", http.MethodGet, getKeyboardFlashTap)
 	handleFunc(r, "/api/systray", http.MethodGet, getSystrayData)
+	handleFunc(r, "/api/stats/devices", http.MethodGet, getDeviceStats)
+	handleFunc(r, "/api/stats/memory", http.MethodGet, getMemoryUsage)
+	handleFunc(r, "/api/stats/storage", http.MethodGet, getStorageUsage)
 	handleFunc(r, "/api/keyboard/dial/getColors/", http.MethodGet, getControlDialColors)
 	handleFunc(r, "/api/getSupportedDevices", http.MethodGet, getSupportedDevices)
 	handleFunc(r, "/api/backup", http.MethodGet, backup.PerformBackup)
@@ -2584,6 +2845,8 @@ func setRoutes() http.Handler {
 	handleFunc(r, "/api/color/linkAdapter/bulk", http.MethodPost, setLinkAdapterBulkColor)
 	handleFunc(r, "/api/color/getOverride", http.MethodPost, getRgbOverride)
 	handleFunc(r, "/api/color/setOverride", http.MethodPost, setRgbOverride)
+	handleFunc(r, "/api/color/getTimewarp", http.MethodPost, getRgbTimewarp)
+	handleFunc(r, "/api/color/setTimewarp", http.MethodPost, setRgbTimewarp)
 	handleFunc(r, "/api/color/setTemperatureProbe", http.MethodPost, setTemperatureProbe)
 	handleFunc(r, "/api/color/getLedData", http.MethodPost, getLedData)
 	handleFunc(r, "/api/color/setLedData", http.MethodPost, setLedData)
@@ -2607,6 +2870,10 @@ func setRoutes() http.Handler {
 	handleFunc(r, "/api/lcd/image", http.MethodPost, setDeviceLcdImage)
 	handleFunc(r, "/api/brightness", http.MethodPost, changeBrightness)
 	handleFunc(r, "/api/brightness/gradual", http.MethodPost, changeBrightnessGradual)
+	handleFunc(r, "/api/contrast/gradual", http.MethodPost, changeContrastGradual)
+	handleFunc(r, "/api/backlight/gradual", http.MethodPost, changeBacklightGradual)
+	handleFunc(r, "/api/colortone", http.MethodPost, changeColorTone)
+	handleFunc(r, "/api/resetSettings", http.MethodPost, resetDeviceSettings)
 	handleFunc(r, "/api/position/update", http.MethodPost, changePosition)
 	handleFunc(r, "/api/dashboard/update", http.MethodPost, setDashboardSettings)
 	handleFunc(r, "/api/dashboard/sidebar", http.MethodPost, setDashboardSidebar)
@@ -2637,6 +2904,7 @@ func setRoutes() http.Handler {
 	handleFunc(r, "/api/mouse/buttonOptimization", http.MethodPost, changeButtonOptimization)
 	handleFunc(r, "/api/mouse/leftHandMode", http.MethodPost, changeLeftHandMode)
 	handleFunc(r, "/api/mouse/liftHeight", http.MethodPost, changeLiftHeight)
+	handleFunc(r, "/api/mouse/surfaceSelection", http.MethodPost, changeSurfaceSelection)
 	handleFunc(r, "/api/mouse/updateKeyAssignment", http.MethodPost, changeKeyAssignment)
 	handleFunc(r, "/api/headset/updateKeyAssignment", http.MethodPost, changeKeyAssignment)
 	handleFunc(r, "/api/headset/zoneColors", http.MethodPost, saveHeadsetZoneColors)
@@ -2672,6 +2940,13 @@ func setRoutes() http.Handler {
 	handleFunc(r, "/api/audio/outputDevice", http.MethodPost, setAudioOutputDeviceSettings)
 	handleFunc(r, "/api/devices/channel", http.MethodPost, getChannelData)
 	handleFunc(r, "/api/display/update", http.MethodPost, updateDisplayData)
+	handleFunc(r, "/api/xeneon/getWidget", http.MethodPost, getXeneonWidget)
+	handleFunc(r, "/api/xeneon/saveWidget", http.MethodPost, saveXeneonWidget)
+	handleFunc(r, "/api/xeneon/setWidgetArea", http.MethodPost, setXeneonWidgetArea)
+	handleFunc(r, "/api/devices/getHardwareLights", http.MethodPost, getHardwareLights)
+	handleFunc(r, "/api/devices/setHardwareLights", http.MethodPost, setHardwareLights)
+	handleFunc(r, "/api/devices/setHardwareLight", http.MethodPost, setHardwareLight)
+	handleFunc(r, "/api/auth/update", http.MethodPost, updateAuthSettings)
 
 	// PUT
 	handleFunc(r, "/api/temperatures/update", http.MethodPut, updateTemperatureProfile)
@@ -2707,7 +2982,8 @@ func setRoutes() http.Handler {
 		handleFunc(r, "/macros", http.MethodGet, uiMacrosOverview)
 		handleFunc(r, "/lcd", http.MethodGet, uiLcdOverview)
 		handleFunc(r, "/settings", http.MethodGet, uiSettings)
-		//handleFunc(r, "/xeneon", http.MethodGet, uiXeneon)
+		handleFunc(r, "/login", http.MethodGet, uiLogin)
+		handleFunc(r, "/xeneon", http.MethodGet, uiXeneon)
 	}
 	return r
 }
@@ -2739,14 +3015,65 @@ func Init() {
 			),
 			Handler: setRoutes(),
 		}
+		scheme := "http"
 
-		fmt.Println(
-			fmt.Sprintf("[Server] Running REST and WebUI on %s. WebUI is accessible via: http://%s",
-				server.Addr,
-				server.Addr,
-			),
+		if dashboard.GetDashboard().AuthEnabled {
+			origin, err := url.Parse(dashboard.GetDashboard().AuthOrigin)
+			if err != nil || origin.Scheme != "https" || origin.Hostname() == "" {
+				logger.Log(logger.Fields{}).Fatal("Authentication requires an HTTPS origin")
+				return
+			}
+
+			cert, err := certificate.EnsureCertificate(
+				filepath.Join(config.GetConfig().ConfigPath, "certificates"),
+				[]string{
+					"localhost",
+					"127.0.0.1",
+					"::1",
+					origin.Hostname(),
+				},
+			)
+			if err != nil {
+				logger.Log(logger.Fields{"error": err}).Fatal("Unable to initialize TLS certificate")
+				return
+			}
+
+			server.TLSConfig = &tls.Config{
+				MinVersion:   tls.VersionTLS12,
+				Certificates: []tls.Certificate{cert},
+			}
+
+			authentication, err := auth.New(
+				auth.Config{
+					Enabled:         dashboard.GetDashboard().AuthEnabled,
+					Username:        dashboard.GetDashboard().AuthUsername,
+					PasswordHash:    dashboard.GetDashboard().AuthPassword,
+					Origin:          dashboard.GetDashboard().AuthOrigin,
+					SessionLifetime: time.Duration(dashboard.GetDashboard().SessionLifetime) * time.Minute,
+				},
+			)
+			if err != nil {
+				logger.Log(logger.Fields{"error": err}).Fatal("Unable to initialize authentication")
+				return
+			}
+
+			server.Handler = authentication.Middleware(setRoutes())
+			scheme = "https"
+		}
+
+		fmt.Printf(
+			"[Server] Running REST and WebUI on %s. WebUI is accessible via: %s://%s\n",
+			server.Addr,
+			scheme,
+			server.Addr,
 		)
-		err := server.ListenAndServe()
+
+		var err error
+		if dashboard.GetDashboard().AuthEnabled {
+			err = server.ListenAndServeTLS("", "")
+		} else {
+			err = server.ListenAndServe()
+		}
 		if err != nil {
 			logger.Log(logger.Fields{"error": err}).Fatal("Unable to start REST server")
 		}
