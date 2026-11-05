@@ -22,6 +22,8 @@ Install `openlinkhub-cpro.conf` in `/etc/modprobe.d/` to prevent the kernel Comm
 
 Reload udev rules, trigger the i2c-dev subsystem, reload systemd, and restart OpenLinkHub after the files and RAM settings are ready. Confirm the stable device link resolves and all four DIMMs appear in the API. A physical reboot and visual inspection are still necessary to verify the LEDs on a particular machine.
 
+For partial LL120 rings or dark downstream fans, see the [RGB isolation procedure and observed recovery](../../../docs/ll120-rgb-troubleshooting.md).
+
 ## Build and verification
 
 Use Go 1.26 or newer and the normal OpenLinkHub native build dependencies:
