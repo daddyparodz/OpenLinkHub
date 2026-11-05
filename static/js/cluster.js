@@ -65,6 +65,34 @@ $(document).ready(function () {
         });
     });
 
+    function syncClusterProfile() {
+        const deviceId = $("#deviceId").val();
+        if (!deviceId) {
+            return;
+        }
+
+        $.ajax({
+            url: '/api/devices/' + deviceId,
+            type: 'GET',
+            cache: false,
+            success: function (response) {
+                const profile = response?.device?.DeviceProfile?.RGBProfile;
+                if (typeof profile !== 'string' || profile.length === 0) {
+                    return;
+                }
+
+                const value = '0;' + profile;
+                const $selector = $('.clusterRgbProfile');
+                if ($selector.find('option[value="' + value + '"]').length > 0 && $selector.val() !== value) {
+                    $selector.val(value);
+                }
+                $('#table tbody tr td:nth-child(3)').text(profile);
+            }
+        });
+    }
+
+    setInterval(syncClusterProfile, 1000);
+
     $('#brightnessSlider').on('change', function () {
         const deviceId = $("#deviceId").val();
         const brightness = $(this).val();

@@ -125,6 +125,11 @@ type Device struct {
 	queueStop          chan struct{}
 	queueDone          chan struct{}
 	queueStopOnce      sync.Once
+	profileSwitchHook  func()
+	clusterSwitchHook  func() bool
+	profileSwitchNow   func() time.Time
+	profileSwitchLatch bool
+	profileSwitchUpAt  time.Time
 }
 
 var (
@@ -148,6 +153,7 @@ var (
 	keyboardKey           = "k95platinum-default"
 	defaultLayout         = "k95platinum-default-US"
 	maximumPacketSize     = 60
+	profileSwitchDebounce = 100 * time.Millisecond
 	rgbProfileUpgrade     = []string{"gradient", "pastelrainbow", "pastelspiralrainbow"}
 	rgbModes              = []string{
 		"circle",
@@ -921,6 +927,9 @@ func (d *Device) UpdateDeviceLabel(_ int, label string) uint8 {
 
 // rotateDeviceProfile will rotate and activate next user profile
 func (d *Device) rotateDeviceProfile() {
+	if d.rotateClusterProfile() {
+		return
+	}
 	if d.DeviceProfile == nil || len(d.ProfileOrder) == 0 || len(d.UserProfiles) == 0 {
 		return
 	}
@@ -1352,6 +1361,38 @@ func (d *Device) ChangeDeviceProfile(profileName string) uint8 {
 		return 1
 	}
 	return 0
+}
+
+// rotateClusterProfile rotates persisted cluster RGB profiles when a cluster
+// is actively controlling devices. The keyboard does not need to join the
+// cluster RGB stream for its profile key to control that cluster.
+func (d *Device) rotateClusterProfile() bool {
+	if d.clusterSwitchHook != nil {
+		return d.clusterSwitchHook()
+	}
+
+	clusterDevice := cluster.Get()
+	if clusterDevice == nil || !clusterDevice.HasControllers() {
+		return false
+	}
+
+	if clusterDevice.RotateSwitchProfile() != 1 {
+		return false
+	}
+
+	// Keep the keyboard on its local writer, but follow the selected group
+	// effect and colors. Persist both so the selection survives a restart.
+	profileName := clusterDevice.DeviceProfile.RGBProfile
+	if profile := clusterDevice.GetRgbProfile(profileName); profile != nil && d.Rgb != nil {
+		d.rgbMutex.Lock()
+		d.Rgb.Profiles[profileName] = *profile
+		d.saveRgbProfile()
+		d.rgbMutex.Unlock()
+	}
+	if d.UpdateRgbProfile(0, profileName) != 1 {
+		logger.Log(logger.Fields{"serial": d.Serial, "profile": profileName}).Warn("Unable to follow cluster profile on keyboard")
+	}
+	return true
 }
 
 // DeleteDeviceProfile deletes a device profile and its JSON file
@@ -2335,6 +2376,69 @@ func (d *Device) getListenerData() []byte {
 	return data
 }
 
+func (d *Device) processListenerData(data []byte) {
+	if len(data) > 0 && data[0] == 0x03 {
+		d.triggerKeyAssignment(data)
+	}
+}
+
+func (d *Device) handleProfileSwitch() {
+	if d.profileSwitchHook != nil {
+		d.profileSwitchHook()
+		return
+	}
+	d.rotateDeviceProfile()
+}
+
+// processProfileSwitch turns the noisy HID report stream into one logical
+// profile switch per physical press. Some K95 firmware briefly clears the
+// profile bit while the key is still held, so a release must remain stable
+// before the latch can be armed again.
+func (d *Device) processProfileSwitch(current *big.Int) {
+	if d.DeviceProfile == nil {
+		return
+	}
+
+	pressed := false
+	for i := 0; i < current.BitLen(); i++ {
+		if current.Bit(i) == 0 {
+			continue
+		}
+		keyHash := new(big.Int).Lsh(big.NewInt(1), uint(i)).String()
+		key := d.getKeyData(keyHash)
+		if key != nil && key.ProfileSwitch {
+			pressed = true
+			break
+		}
+	}
+
+	now := time.Now()
+	if d.profileSwitchNow != nil {
+		now = d.profileSwitchNow()
+	}
+
+	if !pressed {
+		if d.profileSwitchLatch && d.profileSwitchUpAt.IsZero() {
+			d.profileSwitchUpAt = now
+		}
+		return
+	}
+
+	if d.profileSwitchLatch {
+		if d.profileSwitchUpAt.IsZero() {
+			return
+		}
+		if now.Sub(d.profileSwitchUpAt) < profileSwitchDebounce {
+			d.profileSwitchUpAt = time.Time{}
+			return
+		}
+	}
+
+	d.profileSwitchLatch = true
+	d.profileSwitchUpAt = time.Time{}
+	d.handleProfileSwitch()
+}
+
 // controlButtonListener will listen for events from the control buttons
 func (d *Device) backendListener() {
 	go func() {
@@ -2378,9 +2482,7 @@ func (d *Device) backendListener() {
 					continue
 				}
 
-				if data[0] == 0x03 {
-					d.triggerKeyAssignment(data)
-				}
+				d.processListenerData(data)
 				time.Sleep(5 * time.Millisecond)
 			}
 		}
@@ -2475,6 +2577,7 @@ func (d *Device) triggerKeyAssignment(value []byte) {
 		previous = new(big.Int).Set(d.ModifierIndex)
 	}
 	current := new(big.Int).Set(val)
+	d.processProfileSwitch(current)
 	pressed := new(big.Int).AndNot(new(big.Int).Set(current), previous)
 	released := new(big.Int).AndNot(new(big.Int).Set(previous), current)
 	changed := previous.Cmp(current) != 0
@@ -2549,9 +2652,6 @@ func (d *Device) triggerKeyAssignment(value []byte) {
 
 			// Profile switch
 			if key.ProfileSwitch {
-				if keyPressed {
-					d.rotateDeviceProfile()
-				}
 				continue
 			}
 

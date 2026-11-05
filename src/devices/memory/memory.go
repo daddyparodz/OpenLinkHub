@@ -234,6 +234,7 @@ func Init(_, _ uint16, _, path string) *common.Device {
 	}
 	d.setAutoRefresh()         // Set auto device refresh
 	d.saveDeviceProfile()      // Save profile
+	d.initializeDeviceColor()  // Initialize DIMM controllers
 	d.setDeviceColor()         // Device color
 	d.setTemperatures()        // Initial temp
 	d.getTemperatureProbe()    // Devices with temperature value
@@ -243,6 +244,34 @@ func Init(_, _ uint16, _, path string) *common.Device {
 	d.createDevice()           // Device register
 
 	return d.instance
+}
+
+// initializeDeviceColor clears stale hardware lighting before the active
+// profile is applied. Some DIMM controllers acknowledge SMBus writes before
+// their LED controller is ready, so startup packets must bypass the SMBus
+// cache and be repeated while the controllers settle.
+func (d *Device) initializeDeviceColor() {
+	keys := make([]int, 0)
+	for k, device := range d.Devices {
+		if device.LedChannels > 0 {
+			keys = append(keys, k)
+		}
+	}
+	sort.Ints(keys)
+
+	for attempt := 0; attempt < 4; attempt++ {
+		if attempt > 0 {
+			time.Sleep(250 * time.Millisecond)
+		}
+		for _, k := range keys {
+			black := make(map[int][]byte, d.Devices[k].LedChannels)
+			for i := 0; i < int(d.Devices[k].LedChannels); i++ {
+				black[i] = []byte{0, 0, 0}
+			}
+			d.transfer(rgb.SetColor(black), colorAddresses[k], d.Devices[k].LedChannels, d.Devices[k].ColorRegister, true)
+			time.Sleep(5 * time.Millisecond)
+		}
+	}
 }
 
 func (d *Device) setRuntimeMemoryType(memoryType int) {
@@ -791,7 +820,12 @@ func (d *Device) getDevices() int {
 
 // getI2cSensor will return i2c device number
 func (d *Device) getI2cSensor() int {
-	parts := strings.Split(d.Path, "-")
+	// Stable udev aliases must still resolve to the numbered hwmon adapter.
+	path := d.Path
+	if resolved, err := filepath.EvalSymlinks(path); err == nil {
+		path = resolved
+	}
+	parts := strings.Split(path, "-")
 	n, err := strconv.Atoi(parts[len(parts)-1])
 	if err != nil {
 		logger.Log(logger.Fields{"error": err}).Error("Unable to get i2c device number")
@@ -2203,7 +2237,7 @@ func (d *Device) calculateChecksum(data []byte) byte {
 }
 
 // transfer will transfer data to a i2c device
-func (d *Device) transfer(buffer []byte, address, ledDevices byte, colorRegister uint8) uint16 {
+func (d *Device) transfer(buffer []byte, address, ledDevices byte, colorRegister uint8, force ...bool) uint16 {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 
@@ -2214,6 +2248,11 @@ func (d *Device) transfer(buffer []byte, address, ledDevices byte, colorRegister
 		buf = append(buf, buffer[i])
 	}
 	buf = append(buf, d.calculateChecksum(buf))
+	forced := len(force) > 0 && force[0]
+	write := smbus.WriteBlockData
+	if forced {
+		write = smbus.WriteBlockDataForced
+	}
 	if d.Debug {
 		logger.Log(logger.Fields{"colorPacket": fmt.Sprintf("% 2x", buf)}).Info("Memory Color")
 	}
@@ -2225,7 +2264,7 @@ func (d *Device) transfer(buffer []byte, address, ledDevices byte, colorRegister
 			if d.Debug {
 				logger.Log(logger.Fields{"colorPacket": fmt.Sprint("% 2x", chunk)}).Info("Memory Color - Chunk")
 			}
-			err := smbus.WriteBlockData(d.dev.File, address, colorRegister, chunk)
+			err := write(d.dev.File, address, colorRegister, chunk)
 			if err != nil {
 				logger.Log(logger.Fields{"error": err, "address": address}).Error("Unable to write to i2c register")
 			}
@@ -2233,7 +2272,7 @@ func (d *Device) transfer(buffer []byte, address, ledDevices byte, colorRegister
 			time.Sleep(1 * time.Millisecond)
 		}
 	} else {
-		err := smbus.WriteBlockData(d.dev.File, address, colorRegister, buf)
+		err := write(d.dev.File, address, colorRegister, buf)
 		if err != nil {
 			logger.Log(logger.Fields{"error": err, "address": address}).Error("Unable to write to i2c register")
 		}

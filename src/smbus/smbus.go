@@ -110,12 +110,22 @@ func Open(device string) (*Connection, error) {
 
 // WriteBlockData will write a byte array to register
 func WriteBlockData(f *os.File, address, register uint8, buf []byte) error {
+	return writeBlockData(f, address, register, buf, false)
+}
+
+// WriteBlockDataForced writes a byte array even when it matches the cached
+// value. Hardware initialization may require repeated identical packets.
+func WriteBlockDataForced(f *os.File, address, register uint8, buf []byte) error {
+	return writeBlockData(f, address, register, buf, true)
+}
+
+func writeBlockData(f *os.File, address, register uint8, buf []byte, force bool) error {
 	if len(buf) > int(i2csmBusMax) {
 		return errors.New("buffer is too long for this type")
 	}
 
 	k := cacheKey{addr: address, reg: register}
-	if prev, ok := cacheData[k]; ok && bytes.Equal(prev, buf) {
+	if prev, ok := cacheData[k]; !force && ok && bytes.Equal(prev, buf) {
 		return nil
 	}
 
