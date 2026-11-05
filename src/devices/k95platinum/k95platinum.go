@@ -166,6 +166,7 @@ var (
 		"gpu-temperature",
 		"gradient",
 		"keyboard",
+		"keyboard-white",
 		"off",
 		"rainbow",
 		"pastelrainbow",
@@ -448,6 +449,7 @@ func (d *Device) loadRgb() {
 	}
 
 	d.upgradeRgbProfile(rgbFilename, rgbProfileUpgrade)
+	d.Rgb.Profiles["keyboard-white"] = keyboardWhiteProfile()
 }
 
 // upgradeRgbProfile will upgrade current rgb profile list
@@ -591,7 +593,7 @@ func (d *Device) setupPerformance() {
 
 // isRgbStatic will return if RGB effect is static
 func (d *Device) isRgbStatic() bool {
-	if d.DeviceProfile.RGBProfile == "keyboard" || d.DeviceProfile.RGBProfile == "static" {
+	if d.DeviceProfile.RGBProfile == "keyboard" || d.DeviceProfile.RGBProfile == "static" || d.DeviceProfile.RGBProfile == "keyboard-white" {
 		return true
 	}
 	return false
@@ -1382,10 +1384,14 @@ func (d *Device) rotateClusterProfile() bool {
 
 	// Keep the keyboard on its local writer, but follow the selected group
 	// effect and colors. Persist both so the selection survives a restart.
-	profileName := clusterDevice.DeviceProfile.RGBProfile
-	if profile := clusterDevice.GetRgbProfile(profileName); profile != nil && d.Rgb != nil {
+	profileName, profile := clusterDevice.SelectedRgbProfile()
+	if profile != nil && d.Rgb != nil {
 		d.rgbMutex.Lock()
-		d.Rgb.Profiles[profileName] = *profile
+		if profileName == "keyboard-white" {
+			d.Rgb.Profiles[profileName] = keyboardWhiteProfile()
+		} else {
+			d.Rgb.Profiles[profileName] = *profile
+		}
 		d.saveRgbProfile()
 		d.rgbMutex.Unlock()
 	}
@@ -1921,8 +1927,8 @@ func (d *Device) setDeviceColor() {
 		}
 	}
 
-	if d.DeviceProfile.RGBProfile == "static" {
-		profile := d.GetRgbProfile("static")
+	if d.DeviceProfile.RGBProfile == "static" || d.DeviceProfile.RGBProfile == "keyboard-white" {
+		profile := d.GetRgbProfile(d.DeviceProfile.RGBProfile)
 		if profile == nil {
 			return
 		}
@@ -3201,4 +3207,10 @@ func (d *Device) transfer(command byte, endpoint, buffer []byte) error {
 		return err
 	}
 	return nil
+}
+
+// keyboardWhiteProfile leaves the existing brightness controls untouched.
+func keyboardWhiteProfile() rgb.Profile {
+	white := rgb.Color{Red: 255, Green: 255, Blue: 255, Brightness: 1}
+	return rgb.Profile{ProfileName: "Solo K95 bianca", StartColor: white, EndColor: white, Brightness: 1, Speed: 1, Smoothness: 1}
 }

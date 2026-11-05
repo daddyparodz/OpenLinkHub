@@ -51,3 +51,17 @@ func TestSavedOffProfileSurvivesLoadingAndClearsEveryLED(t *testing.T) {
 		}
 	}
 }
+
+func TestMissingEffectClearsWholeCluster(t *testing.T) {
+	d := &Device{Rgb: &rgb.RGB{Profiles: map[string]rgb.Profile{}}}
+	start := time.Now()
+	frame := d.generateRgbEffect(136, &start, "missing")
+	if len(frame) != 136*3 {
+		t.Fatalf("fallback frame has %d bytes, want 408", len(frame))
+	}
+	for _, v := range frame {
+		if v != 0 {
+			t.Fatal("fallback is not black")
+		}
+	}
+}

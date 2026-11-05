@@ -94,3 +94,14 @@ func TestClusterSwitchDoesNotRequireKeyboardClusterMembership(t *testing.T) {
 		t.Fatalf("cluster switch invoked %d times, want 1", switches)
 	}
 }
+
+func TestKeyboardWhiteUsesStaticWhiteEffect(t *testing.T) {
+	d := &Device{DeviceProfile: &DeviceProfile{RGBProfile: "keyboard-white"}}
+	if !d.isRgbStatic() {
+		t.Fatal("white scene must use the static writer")
+	}
+	p := keyboardWhiteProfile()
+	if p.StartColor.Red != 255 || p.StartColor.Green != 255 || p.StartColor.Blue != 255 {
+		t.Fatal("scene is not white")
+	}
+}
