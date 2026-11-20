@@ -106,6 +106,7 @@ type Device struct {
 	timerSpeed              *time.Ticker
 	mutex                   sync.Mutex
 	deviceLock              sync.Mutex
+	softwarePortReady       [2]bool
 	RGBModes                []string
 	queue                   chan map[int][]byte
 	instance                *common.Device
@@ -328,10 +329,10 @@ func (d *Device) GetRgbProfiles() interface{} {
 // Stop will stop all device operations and switch a device back to hardware mode
 func (d *Device) Stop() {
 	d.Exit = true
-	lightChannels := 0
 	logger.Log(logger.Fields{"serial": d.Serial, "product": d.Product}).Info("Stopping device...")
 	for i := 0; i < len(d.DeviceProfile.ExternalHubs); i++ {
 		externalHub := d.DeviceProfile.ExternalHubs[i]
+		lightChannels := 0
 		for _, device := range d.Devices {
 			if device.PortId == externalHub.PortId {
 				lightChannels += int(device.LedChannels)
@@ -2539,6 +2540,17 @@ func (d *Device) writeColor(data []byte, lightChannels int, portId byte) {
 		return
 	}
 
+	if portId >= byte(len(d.softwarePortReady)) || lightChannels < 1 || len(data) != lightChannels*3 {
+		return
+	}
+	if !d.softwarePortReady[portId] {
+		if err := prepareSoftwarePort(portId, d.transfer); err != nil {
+			return
+		}
+	}
+	// A failed frame must be cleared before the next attempt.
+	complete := false
+	defer func() { d.softwarePortReady[portId] = complete }()
 	if _, err := d.transfer(cmdPortState, []byte{portId, 0x02}); err != nil {
 		return
 	}
@@ -2594,6 +2606,7 @@ func (d *Device) writeColor(data []byte, lightChannels int, portId byte) {
 	if _, err := d.transfer(cmdRefresh, []byte{0xff}); err != nil {
 		return
 	}
+	complete = true
 }
 
 // writeColorEx will write data to the device from OpenRGB client
